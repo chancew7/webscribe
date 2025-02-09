@@ -199,7 +199,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
     if (message.key === constants.MessageKeys.MARKUP_MESSAGE) { //an existing markup has been found, load and apply the annotations
         url = message.url;
-        console.log("hey");
+        console.log(message.markup_key);
         if (message.markup_key) {
             markupKey = message.markup_key;
 
