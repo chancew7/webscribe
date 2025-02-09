@@ -99,17 +99,6 @@ export function getCurrentTabUrl(){
 }
 
 
-/*
-export async function saveAnnotationToDatabase(annotation){
-
-    const markupDocRef = doc(db, 'markups', annotation.markup_key); 
-
-        await updateDoc(markupDocRef, {
-            annotations: arrayUnion(annotation)
-        });
-}
-*/
-
 
 export async function saveAnnotationToDatabase(annotation) {
     const markupDocRef = doc(db, 'markups', annotation.markup_key);

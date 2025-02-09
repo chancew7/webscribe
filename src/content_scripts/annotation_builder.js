@@ -199,11 +199,11 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
     if (message.key === constants.MessageKeys.MARKUP_MESSAGE) { //an existing markup has been found, load and apply the annotations
         url = message.url;
-
+        console.log("hey");
         if (message.markup_key) {
             markupKey = message.markup_key;
 
-
+            console.log("here");
             try {
                 const docRef = doc(db, 'markups', markupKey);
                 const docSnap = await getDoc(docRef);
@@ -211,6 +211,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
                 if (docSnap.exists()) {
                     const annotations = docSnap.data().annotations;
                     annotations.forEach(annotation => {
+                        console.log("hmm");
                         reimplementAnnotation(annotation);
                     });
                 }

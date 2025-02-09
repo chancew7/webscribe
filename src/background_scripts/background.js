@@ -213,6 +213,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
             if (docSnap.exists()) {
                 const url = docSnap.data().url;
                 const annotations = docSnap.data().annotations;
+                console.log("annotations", annotations);
 
                 // Open the URL in a new tab
                 chrome.tabs.create({ url: url }, (tab) => {
@@ -221,6 +222,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
                         if (tabId === tab.id && changeInfo.status === "complete") {
                             chrome.tabs.sendMessage(tab.id, {
                                 key: constants.MessageKeys.MARKUP_MESSAGE,
+                                markup_key: markupKey,
                                 annotations: annotations,
                             });
 
