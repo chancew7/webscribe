@@ -136,7 +136,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 });
 
 //message listeners
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
     if (message.key === constants.MessageKeys.KEY_COMMAND) {
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -166,6 +166,41 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         console.log("annotation data .markup_key: " + message.annotation.markup_key);
 
         annotation_messages.saveAnnotationToDatabase(message.annotation);
+    }
+
+    else if (message.key === constants.MessageKeys.GET_MARKUP_KEY){
+        const {url, userId} = message;
+        try {
+            const q = query(
+                collection(db, "markups"),
+                where("url", "==", url),
+                where("userId", "==", userId)
+            );
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                const doc = querySnapshot.docs[0];
+                // Send a message back to all listeners with the result
+                chrome.runtime.sendMessage({
+                    key: constants.MessageKeys.MARKUP_KEY_RESPONSE,
+                    success: true,
+                    markupKey: doc.data().markup_key,
+                });
+            } else {
+                chrome.runtime.sendMessage({
+                    key: constants.MessageKeys.MARKUP_KEY_RESPONSE,
+                    success: false,
+                    error: "No matching markup key found.",
+                });
+            }
+        } catch (error) {
+            console.error("Error querying database:", error);
+            chrome.runtime.sendMessage({
+                key: constants.MessageKeys.MARKUP_KEY_RESPONSE,
+                success: false,
+                error: "Database query failed.",
+            });
+        }
     }
 
 });
@@ -203,23 +238,71 @@ chrome.webNavigation.onCompleted.addListener(async (details) => {
 //markup querying
 async function loadMarkup(url) {
     try {
-        const q = query(collection(db, 'markups'), where('url', '==', url));
+        const MAX_URL_LENGTH = 1500; // Firestore limit in bytes
+        if (new TextEncoder().encode(url).length > MAX_URL_LENGTH) {
+            console.warn("URL size exceeds Firestore's query limit. Skipping:", url);
+            return null; // Do nothing and return null
+        }
+
+        // Retrieve the userId from chrome.storage
+        const userId = await new Promise((resolve, reject) => {
+            chrome.storage.sync.get("userId", (result) => {
+                if (chrome.runtime.lastError) {
+                    console.error("Error retrieving userId:", chrome.runtime.lastError.message);
+                    reject(chrome.runtime.lastError);
+                } else {
+                    resolve(result.userId || null);
+                }
+            });
+        });
+
+        if (!userId) {
+            console.warn("User ID not found in storage. Skipping markup loading.");
+            return null; // Skip if no userId is found
+        }
+
+        // Perform a compound query on both url and userId
+        const q = query(
+            collection(db, "markups"),
+            where("url", "==", url),
+            where("userId", "==", userId) // Add second filter for userId
+        );
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
             const doc = querySnapshot.docs[0];
             const markupKey = doc.data().markup_key;
+            console.log("Matching markup found for user:", userId);
             return markupKey;
-        }
-        else {
+        } else {
+            console.log("No matching markup found for the given URL and user.");
             return null;
         }
+    } catch (error) {
+        console.error("Error querying", error);
+        throw new Error("Failed to get markup");
     }
-    catch (error) {
-        console.error("error querying", error);
-        throw new Error("failed to get markup");
-    }
+}
 
+export async function getMarkupKey(url, userId) {
+    try {
+        const q = query(
+            collection(db, "markups"),
+            where("url", "==", url),
+            where("userId", "==", userId) // Match userId and url
+        );
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            const doc = querySnapshot.docs[0]; // Get the first document that matches
+            return doc.data().markup_key; // Return the markup_key field
+        } else {
+            return null; // No matching markup key found
+        }
+    } catch (error) {
+        console.error("Error querying the database:", error);
+        throw new Error("Failed to query the database.");
+    }
 }
 
 

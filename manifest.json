@@ -4,10 +4,19 @@
 
     "manifest_version" : 3,
     "name" : "Markup",
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxCwlYCiEeqE/VvQ+TN7BRkOgsQnlaQepOqDJ1gW8ToXBuoMgivVofxHY6aXrcXksxeA2DLUtuCa4JKAjU6I1YbCKeCRma/09vo3VOWxYWdY/O8GRii/APw+jQmOAeM+eq3F/DfPNGfA5oxeDRNg6HWiaGpv1tm4NUWTgmQfxx754GEocseoBaHkIbD5nMjpGEjvvLmVPYU636ZR4x7POyfZnqFYzk2NnZsu0JODrneBZwgvilo5RPbRJRvjdUChi0I4X8hpFwr/4kkp4dDGcAt8SrHXboqdVo9vkeE5GWEMwIgMTj2hIuQlOKRSykRrApnR7ek7lC+Q57PADZ3kapQIDAQAB",
     "description" : "Base Level Extension", 
     "version" : "1.0",
     "action" : {
       "default_title" : "Test Title"
+    },
+    "content_security_policy": {
+      "extension_pages": "script-src 'self'; object-src 'self';"
+  },
+    "oauth2":{
+      "client_id": "137230744992-8sri4rmnsv8rsljv0cp9v2o17f8rdbt1.apps.googleusercontent.com",
+      "scopes": ["https://www.googleapis.com/auth/userinfo.profile",
+      "https://www.googleapis.com/auth/userinfo.email"]
     },
     "permissions" : [
       "webNavigation",

@@ -1,0 +1,53 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annotation Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            max-width: 600px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        input, button {
+            margin: 5px 0 15px;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        #annotations {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Annotation Manager</h1>
+
+    <!-- Login Button -->
+    <button id="loginButton">Login with Google</button>
+
+    <!-- Field to Get Markup Key by URL -->
+    <label for="urlInput">Enter URL to Get Markup Key:</label>
+    <input type="text" id="urlInput" placeholder="Enter a URL">
+    <button id="getMarkupKeyButton">Get Markup Key</button>
+    <p id="markupKeyOutput"></p>
+
+    <!-- Field to View Annotations by Markup Key -->
+    <label for="markupKeyInput">Enter Markup Key to View Annotations:</label>
+    <input type="text" id="markupKeyInput" placeholder="Enter a Markup Key">
+    <button id="viewAnnotationsButton">View Annotations</button>
+    <div id="annotations"></div>
+
+    <script src="./script.js"></script>
+
+</body>
+</html>
