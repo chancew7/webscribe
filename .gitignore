@@ -1,0 +1,44 @@
+# Node.js dependencies
+/node_modules
+
+# Build output
+/dist
+
+# Environment variables
+.env
+
+# Logs
+logs
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE-specific files
+.vscode
+.idea
+
+# Temporary files
+*.tmp
+*.swp
+
+
+
+# Jest coverage reports
+/coverage
+
+# Jest cache
+/jest-cache
+
+# npm debug log
+npm-debug.log*
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Optional npm cache directory
+.npm
+
+# Config files with sensitive data
+src/config.js

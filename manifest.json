@@ -1,0 +1,64 @@
+
+
+{
+
+    "manifest_version" : 3,
+    "name" : "Markup",
+    "description" : "Base Level Extension", 
+    "version" : "1.0",
+    "action" : {
+      "default_title" : "Test Title"
+    },
+    "permissions" : [
+      "webNavigation",
+      "contextMenus",
+      "activeTab",
+      "scripting",
+      "commands",
+      "identity", 
+      "storage", 
+      "tabs"
+    ],
+
+    "host_permissions": [
+      "*://localhost/*",
+      "*://127.0.0.1/*", 
+      "*://api.openai.com/*"
+    ],
+
+    "icons": {
+        "16": "/pictures/icon.png",
+        "32":"/pictures/icon.png",
+        "48":"/pictures/icon.png",
+        "128":"/pictures/icon.png"
+    },
+
+    "content_scripts" : [
+        {
+            "js": ["dist/content.bundle.js"],
+            "matches": [
+                "<all_urls>",
+                "http://localhost/*",
+                "http://127.0.0.1/*"
+            ]
+        }
+    ], 
+
+    "background": {
+    "service_worker": "dist/background.bundle.js"
+  }, 
+
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "pictures/*", "firebase-app.js", "firebase-firestore.js"
+      ],
+      "matches": ["<all_urls>", "*://localhost/*", "*://127.0.0.1/*"]
+  
+    }
+    ]
+
+  
+}
+
+
