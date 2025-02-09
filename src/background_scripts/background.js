@@ -5,7 +5,7 @@ import * as annotation_messages from './annotation_message.js';
 import { markup } from './markup.js';
 
 import { db } from './firebase-init.js';
-import { collection, query, where, getDocs, addDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, addDoc, doc, getDoc } from 'firebase/firestore';
 
 chrome.action.onClicked.addListener(function() {
     chrome.tabs.create({url: '../index.html'});
@@ -201,6 +201,45 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
                 error: "Database query failed.",
             });
         }
+    }
+    else if (message.key === "loadAnnotations") {
+        console.log("load annotations message recieved");
+        const { markupKey } = message;
+
+        try {
+            const docRef = doc(db, "markups", markupKey);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const url = docSnap.data().url;
+                const annotations = docSnap.data().annotations;
+
+                // Open the URL in a new tab
+                chrome.tabs.create({ url: url }, (tab) => {
+                    // Send annotations to the new tab once it’s loaded
+                    chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo) {
+                        if (tabId === tab.id && changeInfo.status === "complete") {
+                            chrome.tabs.sendMessage(tab.id, {
+                                key: constants.MessageKeys.MARKUP_MESSAGE,
+                                annotations: annotations,
+                            });
+
+                            // Remove the listener to prevent it from firing again
+                            chrome.tabs.onUpdated.removeListener(listener);
+                        }
+                    });
+                });
+
+                sendResponse({ success: true });
+            } else {
+                sendResponse({ success: false, error: "Markup ID not found." });
+            }
+        } catch (error) {
+            console.error("Error querying Firestore for annotations:", error);
+            sendResponse({ success: false, error: "Database query failed." });
+        }
+
+        return true; // Indicate that the response will be sent asynchronously
     }
 
 });

@@ -82,3 +82,21 @@ chrome.runtime.onMessage.addListener((message) => {
     }
 });
 
+
+document.getElementById("viewAnnotationsButton").addEventListener("click", function () {
+    const markupKey = document.getElementById("markupKeyInput").value.trim();
+
+    if (!markupKey) {
+        alert("Please enter a valid Markup Key.");
+        return;
+    }
+
+    // Send message to the background script
+    chrome.runtime.sendMessage(
+        {
+            key: "loadAnnotations",
+            markupKey: markupKey,
+        });
+});
+
+
