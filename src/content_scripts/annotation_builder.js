@@ -51,12 +51,13 @@ async function createMarkup(url) {
 
     if (!userId) {
         console.warn("User ID not found in storage. Markup will not have associated user.");
+        return null;
     }
 
     let newMarkup = {
         url: url,
         markup_key: markupKey,
-        userId: userId,
+        userIds: [userId],
         annotations: []
     };
 

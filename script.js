@@ -64,7 +64,7 @@ document.getElementById("logoutButton").addEventListener("click", function () {
 
 
 
-document.getElementById("getMarkupKeyButton").addEventListener("click", function () {
+document.getElementById("getCollaborationKeyButton").addEventListener("click", function () {
     const url = document.getElementById("urlInput").value.trim();
     if (!url) {
         alert("Please enter a valid URL.");

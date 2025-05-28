@@ -174,7 +174,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
             const q = query(
                 collection(db, "markups"),
                 where("url", "==", url),
-                where("userId", "==", userId)
+                where("userIds", "array-contains", userId)
             );
             const querySnapshot = await getDocs(q);
 
@@ -306,7 +306,7 @@ async function loadMarkup(url) {
         const q = query(
             collection(db, "markups"),
             where("url", "==", url),
-            where("userId", "==", userId) // Add second filter for userId
+            where("userIds", "array-contains", userId)
         );
         const querySnapshot = await getDocs(q);
 
@@ -330,7 +330,7 @@ export async function getMarkupKey(url, userId) {
         const q = query(
             collection(db, "markups"),
             where("url", "==", url),
-            where("userId", "==", userId) // Match userId and url
+            where("userIds", "array-contains", userId),
         );
         const querySnapshot = await getDocs(q);
 
