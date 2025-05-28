@@ -70,20 +70,7 @@ export class HighlightAnnotation extends Annotation{
         this.showAnnotation();
     }
 
-    /*
-    showAnnotation() {
-        console.log("showing highlight");
-        console.log("span = ", this.span);
-        console.log("this.range = ", this.range);
-        console.log("this.color = ", this.color);
-        const span = document.createElement('span');
-        span.style.backgroundColor = this.color;
-        span.setAttribute('data-annotation', 'highlight');
-        // Surrounding the contents of this.range with the new span.
-        this.range.surroundContents(span);
-        this.highlighted = true;
-    }
-        */
+    
     showAnnotation(){
         this.span.style.backgroundColor = this.color;
         this.highlighted = true;      
@@ -97,12 +84,17 @@ export class HighlightAnnotation extends Annotation{
         });
     }
 
+    generateAnnotationId(){
+        const rand = Math.floor(Math.random() * 1000) + 1;
+        return `${this.markup_key}-${this.annotationType}-${this.range.toString()}-${this.selectionIndex}-${rand}`;
+    }
+
     toJson() {
         
         let selectedText = this.range.toString();
 
         return {
-            id: super.generateAnnotationId(),
+            id: this.generateAnnotationId(),
             type: this.annotationType,
             text: selectedText,
             markup_key: this.markup_key,

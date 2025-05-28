@@ -28,7 +28,8 @@ export class Annotation {
         this.span.style.fontWeight = 'normal';
     }
     generateAnnotationId(){
-        return `${this.markup_key}-${this.annotationType}-${this.range.toString()}`;
+        const rand = Math.floor(Math.random() * 1000) + 1;
+        return `${this.markup_key}-${this.annotationType}-${this.range.toString()}-${rand}`;
     }
     
     

@@ -76,11 +76,16 @@ export class TextstyleAnnotation extends Annotation{
         this.span.style.fontStyle = 'normal';
     }
 
+    generateAnnotationId(){
+        const rand = Math.floor(Math.random() * 1000) + 1;
+        return `${this.markup_key}-${this.annotationType}-${this.range.toString()}-${this.selectionIndex}-${rand}`;
+    }
+
     toJson(){
         let selectedText = this.range.toString();
 
         return{
-            id: super.generateAnnotationId(),
+            id: this.generateAnnotationId(),
             type: constants.ActionType.TEXTSTYLE,
             textstyleType: this.type,
             text: selectedText,

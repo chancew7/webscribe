@@ -18,11 +18,7 @@ var OPENAI_API_KEY = API_KEYS.OPENAI;
 var markupKey = null;
 var url = null;
 
-/*
-export function generateMarkupKey() {
-    return 'markup_' + Math.random().toString(36).substring(2, 11);
-}
-*/
+
 
 export function generateMarkupKey() {
     const words = constants.words;
@@ -75,78 +71,7 @@ export function reimplementAnnotation(annotation) {
     redoAnnotations(text, selectionIndex, annotation);
     
 }
-    
-/*
-function redoAnnotations(searchText, targetIndex, annotation) {
-
-    if (!searchText) return;
-
-    const body = document.body;
-    const textNodes = getTextNodes(body);
-    let textMatches = 0; // Global match index
-
-    textNodes.forEach(node => {
-        const text = node.nodeValue;
-        const searchRegex = new RegExp(searchText, 'gi'); // Case-insensitive search
-
-        // Check if the text node contains any matches
-        if (searchRegex.test(text)) {
-            const matches = text.match(searchRegex); // Find all matches in this node
-            const parts = text.split(searchRegex); // Split the text around matches
-            const parent = node.parentNode;
-
-            // Iterate through matches in this node
-            matches.forEach((match, localIndex) => {
-                textMatches++; // Increment global match count
-                let currentOffset = 0;
-                if (textMatches === targetIndex) {
-
-                    console.log("re-making annotation because match found");
-
-                    // Highlight the nth global match
-                    const startOffset = text.indexOf(match, currentOffset); // Match start offset
-                    const endOffset = startOffset + match.length; // Match end offset
-
-                    const range = document.createRange();
-                    range.setStart(node, startOffset);
-                    range.setEnd(node, endOffset);
-
-
-                    parts.forEach((part, index) => {
-                        if (index > 0) {
-                            const span = document.createElement('span');
-
-                            //start
-                            switch(annotation.type){
-                                case constants.ActionType.HIGHLIGHT:
-                                    let highlight = new HighlightAnnotation(span, range, annotation.color, annotation.markup_key, annotation.selectionIndex);
-                                    highlight.performAnnotation(true);
-                                    break;
-                                case constants.ActionType.TEXTSTYLE:
-                                    let textstyle = new TextstyleAnnotation(span, range, annotation.textstyleType, annotation.markup_key, annotation.selectionIndex);
-                                    textstyle.performAnnotation(true);
-                                    break;
-                                case constants.ActionType.COMMENT:
-                                    let comment = new CommentAnnotation(span, range, annotation.message, markupKey, annotation.selectionIndex);
-                                    comment.performAnnotation()
-                                    break;
-                            }
-
-                            parent.insertBefore(span, node);
-                        }
-
-                        const textNode = document.createTextNode(part);
-                        parent.insertBefore(textNode, node);
-                    });
-
-                    parent.removeChild(node); // Remove original node
-                }
-            });
-        }
-    });
-
-}
-    */
+  
 
 function redoAnnotations(searchText, targetIndex, annotation){
     if(!searchText) return;
