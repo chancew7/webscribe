@@ -20,11 +20,18 @@ var url = null;
 
 
 
-export function generateMarkupKey() {
+export function generateCollaborationMarkupKey() {
     const words = constants.words;
     const word = words[Math.floor(Math.random() * words.length)];
     const number = Math.floor(1000 + Math.random() * 9000); // 4-digit number
     return `${word}${number}`;
+}
+
+export function generateViewMarkupKey() {
+    const words = constants.words;
+    const word = words[Math.floor(Math.random() * words.length)];
+    const number = Math.floor(1000 + Math.random() * 9000); // 4-digit number
+    return `V_${word}${number}`;
 }
 
 
@@ -32,7 +39,8 @@ async function createMarkup(url) {
 
     console.log("no existing markup, creating new");
 
-    const markupKey = generateMarkupKey();
+    const markupKey = generateCollaborationMarkupKey();
+    const viewOnlyKey = generateViewMarkupKey();
 
     const userId = await new Promise((resolve, reject) => {
         chrome.storage.sync.get("userId", (result) => {
@@ -53,6 +61,7 @@ async function createMarkup(url) {
     let newMarkup = {
         url: url,
         markup_key: markupKey,
+        view_key: viewOnlyKey,
         userIds: [userId],
         annotations: []
     };
@@ -178,9 +187,8 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
     if (message.key === constants.MessageKeys.MARKUP_MESSAGE) { //an existing markup has been found, load and apply the annotations
         url = message.url;
-        console.log(message.markup_key);
         if (message.markup_key) {
-            markupKey = message.markup_key;
+                markupKey = message.markup_key;
             try {
                 const docRef = doc(db, 'markups', markupKey);
                 const docSnap = await getDoc(docRef);
@@ -198,6 +206,12 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
         }
 
+    }
+    else if (message.key === "load_view_only"){
+        message.annotations.forEach(annotation => {
+            annotation.markup_key = null;
+            reimplementAnnotation(annotation);
+        });
     }
 
     else if (message.key === constants.MessageKeys.ANNOTATION) {

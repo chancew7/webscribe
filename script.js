@@ -85,11 +85,38 @@ document.getElementById("getCollaborationKeyButton").addEventListener("click", f
         chrome.runtime.sendMessage(
             {
                 key: 'get_markup_key',
-                action: "getMarkupKey",
                 url: url,
                 userId: userId,
             });
     });
+});
+
+document.getElementById("getViewerKeyButton").addEventListener("click", function (){
+    const url = document.getElementById("urlInput").value.trim();
+    if (!url) {
+        alert("Please enter a valid URL.");
+        return;
+    }
+
+    chrome.storage.sync.get("userId", (result) => {
+        if (chrome.runtime.lastError || !result.userId) {
+            console.error("Error retrieving userId:", chrome.runtime.lastError?.message || "No userId found.");
+            document.getElementById("markupKeyOutput").innerText = "Error: User not logged in.";
+            return;
+        }
+
+        const userId = result.userId;
+
+        // Send message to the background script
+        chrome.runtime.sendMessage(
+            {
+                key: 'getViewerKey',
+                url: url,
+                userId: userId,
+            });
+    });
+
+
 });
 
 chrome.runtime.onMessage.addListener((message) => {
@@ -104,9 +131,9 @@ chrome.runtime.onMessage.addListener((message) => {
 
 
 document.getElementById("viewAnnotationsButton").addEventListener("click", function () {
-    const markupKey = document.getElementById("markupKeyInput").value.trim();
+    const viewAnnotationKey = document.getElementById("markupKeyInput").value.trim();
 
-    if (!markupKey) {
+    if (!viewAnnotationKey) {
         alert("Please enter a valid Markup Key.");
         return;
     }
@@ -123,7 +150,7 @@ document.getElementById("viewAnnotationsButton").addEventListener("click", funct
     chrome.runtime.sendMessage(
         {
             key: "loadAnnotations",
-            markupKey: markupKey,
+            viewAnnotationKey: viewAnnotationKey,
             userId: userId
         });
     });

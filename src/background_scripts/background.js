@@ -6,6 +6,7 @@ import { markup } from './markup.js';
 
 import { db } from './firebase-init.js';
 import { collection, query, where, getDocs, addDoc, doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { reimplementAnnotation } from "../content_scripts/annotation_builder.js";
 
 chrome.action.onClicked.addListener(function() {
     chrome.tabs.create({url: '../index.html'});
@@ -178,6 +179,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
                 // Send a message back to all listeners with the result
                 chrome.runtime.sendMessage({
                     key: constants.MessageKeys.MARKUP_KEY_RESPONSE,
+                    key_type: "collaborationKey",
                     success: true,
                     markupKey: doc.data().markup_key,
                 });
@@ -197,16 +199,60 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
             });
         }
     }
+    else if (message.key === "getViewerKey"){
+
+        const {url, userId} = message;
+        try {
+            const q = query(
+                collection(db, "markups"),
+                where("url", "==", url),
+                where("userIds", "array-contains", userId)
+            );
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                const doc = querySnapshot.docs[0];
+                // Send a message back to all listeners with the result
+                chrome.runtime.sendMessage({
+                    key: constants.MessageKeys.MARKUP_KEY_RESPONSE,
+                    key_type: "viewerKey",
+                    success: true,
+                    markupKey: doc.data().view_key,
+                });
+            } else {
+                chrome.runtime.sendMessage({
+                    key: constants.MessageKeys.MARKUP_KEY_RESPONSE,
+                    success: false,
+                    error: "No matching markup key found.",
+                });
+            }
+        } catch (error) {
+            console.error("Error querying database:", error);
+            chrome.runtime.sendMessage({
+                key: constants.MessageKeys.MARKUP_KEY_RESPONSE,
+                success: false,
+                error: "Database query failed.",
+            });
+        }
+
+    }
+
+
     else if (message.key === "loadAnnotations") {
         console.log("load annotations message recieved");
-        const { markupKey, userId } = message;
+        const { viewAnnotationKey, userId } = message;
 
         try {
+
+            if (!viewAnnotationKey.startsWith("V_")){
+                const markupKey = viewAnnotationKey;
+            
+
             const docRef = doc(db, "markups", markupKey);
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
-                const data = docSnap.data()
+                const data = docSnap.data();
                 const url = data.url;
                 const annotations = data.annotations;
                 if (userId != null && !data.userIds?.includes(userId)) {
@@ -233,9 +279,57 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
                 });
 
                 sendResponse({ success: true });
-            } else {
+            } 
+            else {
                 sendResponse({ success: false, error: "Markup ID not found." });
             }
+        }
+        else{ //view only key
+            console.log("view only key");
+            const q = query(
+                collection(db, "markups"),
+                where("view_key", "==", viewAnnotationKey)
+            );
+            const querySnapshot = await getDocs(q);
+
+
+            let markupKey, url, annotations;
+
+            if (!querySnapshot.empty) {
+                const doc = querySnapshot.docs[0];
+                const data = doc.data();
+                markupKey = data.markup_key;
+                url = data.url;
+                annotations = data.annotations;
+            } else {
+                console.log("No matching markup found for the given URL and user.");
+                sendResponse({ success: false, error: "Markup ID not found." });
+                return null;
+            }
+
+            chrome.tabs.create({ url: url }, (tab) => {
+                // Send annotations to the new tab once it’s loaded
+                chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo) {
+                    if (tabId === tab.id && changeInfo.status === "complete") {
+
+                        annotations.forEach(annotation => {
+                            annotation.markup_key = null;
+                        });
+
+                        chrome.tabs.sendMessage(tab.id, {
+                            key: "load_view_only",
+                            annotations: annotations,
+                        });
+
+ 
+                        // Remove the listener to prevent it from firing again
+                        chrome.tabs.onUpdated.removeListener(listener);
+                    }
+                });
+            });
+            
+        }
+
         } catch (error) {
             console.error("Error querying Firestore for annotations:", error);
             sendResponse({ success: false, error: "Database query failed." });
