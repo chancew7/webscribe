@@ -7,7 +7,6 @@ export class HighlightAnnotation extends Annotation{
 
     constructor(span, range, color = HighlightColors.DEFAULT, markup_key, selectionIndex){
         super(span, range, markup_key, constants.ActionType.HIGHLIGHT);
-        console.log("highlight constructor");
         this.color = color;
         this.highlighted = false;
         this.selectionIndex = selectionIndex;
@@ -20,7 +19,6 @@ export class HighlightAnnotation extends Annotation{
             this.removeAnnotation();
         }
         if (!preExisting){
-            console.log("adding highlight to markup");
             this.addToMarkup();
         }
         

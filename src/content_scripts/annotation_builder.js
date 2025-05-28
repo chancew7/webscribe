@@ -18,10 +18,19 @@ var OPENAI_API_KEY = API_KEYS.OPENAI;
 var markupKey = null;
 var url = null;
 
-
+/*
 export function generateMarkupKey() {
     return 'markup_' + Math.random().toString(36).substring(2, 11);
 }
+*/
+
+export function generateMarkupKey() {
+    const words = constants.words;
+    const word = words[Math.floor(Math.random() * words.length)];
+    const number = Math.floor(1000 + Math.random() * 9000); // 4-digit number
+    return `${word}${number}`;
+}
+
 
 async function createMarkup(url) {
 
@@ -202,8 +211,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         console.log(message.markup_key);
         if (message.markup_key) {
             markupKey = message.markup_key;
-
-            console.log("here");
             try {
                 const docRef = doc(db, 'markups', markupKey);
                 const docSnap = await getDoc(docRef);
@@ -211,7 +218,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
                 if (docSnap.exists()) {
                     const annotations = docSnap.data().annotations;
                     annotations.forEach(annotation => {
-                        console.log("hmm");
                         reimplementAnnotation(annotation);
                     });
                 }

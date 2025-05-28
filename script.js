@@ -43,6 +43,26 @@ document.getElementById("loginButton").addEventListener("click", function () {
     });
 });
 
+document.getElementById("logoutButton").addEventListener("click", function () {
+    chrome.identity.getAuthToken({ interactive: false }, (token) => {
+        if (token) {
+            // 1. Revoke token on Google's servers
+            fetch(`https://accounts.google.com/o/oauth2/revoke?token=${token}`)
+                .then(() => {
+                    // 2. Remove cached token locally
+                    chrome.identity.removeCachedAuthToken({ token }, () => {
+                        // 3. Clear stored user data
+                        chrome.storage.sync.remove(['userId', 'userEmail', 'token'], () => {
+                            console.log("Logged out fully.");
+                        });
+                    });
+                })
+                .catch((err) => console.error("Error revoking token:", err));
+        }
+    });
+});
+
+
 
 document.getElementById("getMarkupKeyButton").addEventListener("click", function () {
     const url = document.getElementById("urlInput").value.trim();

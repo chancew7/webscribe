@@ -15,7 +15,7 @@ export const MessageKeys = {
     SAVE_ANNOTATION: 'save_annotation', 
     GENERATE: 'generate_infographic',
     GET_MARKUP_KEY: 'get_markup_key',
-    MARKUP_KEY_RESPONSE: 'markup_response'
+    MARKUP_KEY_RESPONSE: 'markup_response',
 }
 
 export const TextstyleType = {
@@ -65,3 +65,17 @@ export const Titles = {
     SUMMARIZE: PreTitles.SUMMARIZE, 
     GENERATE: "Generate Infographic"
 }
+
+export const words = [
+    "alpha", "bravo", "charlie", "delta", "echo", "foxtrot", "golf", "hotel", "india", "juliet",
+    "kilo", "lima", "mike", "november", "oscar", "papa", "quebec", "romeo", "sierra", "tango",
+    "uniform", "victor", "whiskey", "xray", "yankee", "zulu", "apple", "banana", "cherry", "date",
+    "elderberry", "fig", "grape", "honeydew", "kiwi", "lemon", "mango", "nectarine", "orange", "papaya",
+    "quince", "raspberry", "strawberry", "tangerine", "ugli", "vanilla", "watermelon", "xigua", "yam", "zucchini",
+    "ant", "bee", "cat", "dog", "eel", "fox", "goat", "horse", "iguana", "jaguar",
+    "kangaroo", "lion", "monkey", "newt", "owl", "penguin", "quail", "rabbit", "snake", "turtle",
+    "urchin", "vulture", "wolf", "xerus", "yak", "zebra", "amber", "bronze", "crimson", "denim",
+    "emerald", "fuchsia", "gold", "hazel", "indigo", "jade", "khaki", "lavender", "magenta", "navy",
+    "ochre", "peach", "quartz", "rose", "silver", "teal", "umber", "violet", "white", "yellow"
+  ];
+  
