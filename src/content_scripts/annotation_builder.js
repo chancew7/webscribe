@@ -76,6 +76,7 @@ export function reimplementAnnotation(annotation) {
     
 }
     
+/*
 function redoAnnotations(searchText, targetIndex, annotation) {
 
     if (!searchText) return;
@@ -99,6 +100,9 @@ function redoAnnotations(searchText, targetIndex, annotation) {
                 textMatches++; // Increment global match count
                 let currentOffset = 0;
                 if (textMatches === targetIndex) {
+
+                    console.log("re-making annotation because match found");
+
                     // Highlight the nth global match
                     const startOffset = text.indexOf(match, currentOffset); // Match start offset
                     const endOffset = startOffset + match.length; // Match end offset
@@ -142,6 +146,46 @@ function redoAnnotations(searchText, targetIndex, annotation) {
     });
 
 }
+    */
+
+function redoAnnotations(searchText, targetIndex, annotation){
+    if(!searchText) return;
+
+    const body = document.body;
+    const textNodes = getTextNodes(body);
+    let globalMatchIndex = 0;
+
+    for (const node of textNodes){
+        const text = node.nodeValue;
+        const searchRegex = new RegExp(searchText, 'g');
+
+        let match;
+        while((match = searchRegex.exec(text)) != null){
+            globalMatchIndex++;
+
+            if (globalMatchIndex === targetIndex){
+                const range = document.createRange();
+                range.setStart(node, match.index);
+                range.setEnd(node, match.index + match[0].length);
+
+                const span = document.createElement('span');
+
+                switch (annotation.type) {
+                    case constants.ActionType.HIGHLIGHT:
+                        new HighlightAnnotation(span, range, annotation.color, annotation.markup_key, annotation.selectionIndex).performAnnotation(true);
+                        break;
+                    case constants.ActionType.TEXTSTYLE:
+                        new TextstyleAnnotation(span, range, annotation.textstyleType, annotation.markup_key, annotation.selectionIndex).performAnnotation(true);
+                        break;
+                    case constants.ActionType.COMMENT:
+                        new CommentAnnotation(span, range, annotation.message, annotation.markup_key, annotation.selectionIndex).performAnnotation();
+                        break;
+                }   
+                return;
+            }
+        }
+    }
+}
 
 // Helper function: Get all text nodes in an element
 function getTextNodes(element) {
@@ -165,7 +209,7 @@ function getSelectionIndex(searchText, selection) {
     // Loop through text nodes and match instances
     for (const node of textNodes) {
         const text = node.nodeValue;
-        const searchRegex = new RegExp(searchText, 'gi'); // Case-insensitive search
+        const searchRegex = new RegExp(searchText, 'g'); // Case-insensitive search
 
         // Check if the text node contains any matches
         if (searchRegex.test(text)) {

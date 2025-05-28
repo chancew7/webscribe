@@ -14,11 +14,6 @@ chrome.action.onClicked.addListener(function() {
 //context menu buttons 
 chrome.runtime.onInstalled.addListener(() => {
 
-    chrome.contextMenus.create({
-        id: "parent_menu",
-        title: "Markup", // Replace with your extension's name
-        contexts: ["all"], // Makes this menu appear in all contexts
-    });
 
     chrome.contextMenus.create({
         id: constants.ActionType.HIGHLIGHT,
