@@ -111,12 +111,22 @@ document.getElementById("viewAnnotationsButton").addEventListener("click", funct
         return;
     }
 
+    chrome.storage.sync.get("userId", (result) => {
+        if (chrome.runtime.lastError || !result.userId) {
+            console.error("Error retrieving userId:", chrome.runtime.lastError?.message || "No userId found.");
+            document.getElementById("markupKeyOutput").innerText = "Error: User not logged in.";
+            return;
+        }
+        const userId = result.userId;
+    
     // Send message to the background script
     chrome.runtime.sendMessage(
         {
             key: "loadAnnotations",
             markupKey: markupKey,
+            userId: userId
         });
+    });
 });
 
 

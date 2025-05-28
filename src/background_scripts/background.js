@@ -5,7 +5,7 @@ import * as annotation_messages from './annotation_message.js';
 import { markup } from './markup.js';
 
 import { db } from './firebase-init.js';
-import { collection, query, where, getDocs, addDoc, doc, getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, addDoc, doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 
 chrome.action.onClicked.addListener(function() {
     chrome.tabs.create({url: '../index.html'});
@@ -204,16 +204,21 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     }
     else if (message.key === "loadAnnotations") {
         console.log("load annotations message recieved");
-        const { markupKey } = message;
+        const { markupKey, userId } = message;
 
         try {
             const docRef = doc(db, "markups", markupKey);
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
-                const url = docSnap.data().url;
-                const annotations = docSnap.data().annotations;
-                console.log("annotations", annotations);
+                const data = docSnap.data()
+                const url = data.url;
+                const annotations = data.annotations;
+                if (userId != null && !data.userIds?.includes(userId)) {
+                    await updateDoc(docRef, {
+                        userIds: arrayUnion(userId)
+                    });
+                }
 
                 // Open the URL in a new tab
                 chrome.tabs.create({ url: url }, (tab) => {
@@ -298,7 +303,7 @@ async function loadMarkup(url) {
         });
 
         if (!userId) {
-            console.warn("User ID not found in storage. Skipping markup loading.");
+            console.log("User ID not found in storage. Skipping markup loading.");
             return null; // Skip if no userId is found
         }
 

@@ -50,7 +50,7 @@ async function createMarkup(url) {
     });
 
     if (!userId) {
-        console.warn("User ID not found in storage. Markup will not have associated user.");
+        console.log("User ID not found in storage. Markup will not have associated user.");
         return null;
     }
 
