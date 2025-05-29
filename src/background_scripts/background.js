@@ -8,9 +8,11 @@ import { db } from './firebase-init.js';
 import { collection, query, where, getDocs, addDoc, doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { reimplementAnnotation } from "../content_scripts/annotation_builder.js";
 
+/*
 chrome.action.onClicked.addListener(function() {
     chrome.tabs.create({url: '../index.html'});
   });
+*/
 
 //context menu buttons 
 chrome.runtime.onInstalled.addListener(() => {
