@@ -7,18 +7,30 @@ export class CommentAnnotation extends Annotation{
     constructor(span, range, message = "default message", markup_key, selectionIndex){
         super(span, range, markup_key, constants.ActionType.COMMENT);
         this.message = message;
-        this.commentBox = document.createElement('textarea')
+        this.commentBox = document.createElement('textarea');
         this.selectionIndex = selectionIndex;
     }
 
     performAnnotation(preExisting){
-        this.commentBox.placeholder = this.message;
+        if (!preExisting){
+            this.commentBox.placeholder = this.message;
+        }
+        else{
+            this.commentBox.value = this.message;
+        }
         this.setDefaultProperties();
         this.setDefaultLocation();
         this.enableDragging(this.commentBox);
         this.span.style.backgroundColor = constants.HighlightColors.COMMENT_COLOR; 
         this.addFocusListeners();
         document.body.appendChild(this.commentBox);
+
+        this.commentBox.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace') {
+                e.stopPropagation();
+            }
+        });
+
         this.commentBox.addEventListener('input', (event) => {
             this.message = event.target.value;
         });

@@ -112,7 +112,7 @@ function redoAnnotations(searchText, targetIndex, annotation){
                         new TextstyleAnnotation(span, range, annotation.textstyleType, annotation.markup_key, annotation.selectionIndex).performAnnotation(true);
                         break;
                     case constants.ActionType.COMMENT:
-                        new CommentAnnotation(span, range, annotation.message, annotation.markup_key, annotation.selectionIndex).performAnnotation();
+                        new CommentAnnotation(span, range, annotation.message, annotation.markup_key, annotation.selectionIndex).performAnnotation(true); //add argument
                         break;
                 }   
                 return;
@@ -230,7 +230,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
             switch (message.action) {
                 case constants.ActionType.COMMENT:
                     let comment = new CommentAnnotation(span, range, message.commentMessage, markupKey, selectionIndex);
-                    comment.performAnnotation()
+                    comment.performAnnotation(false); //add argument
                     break;
                 case constants.ActionType.HIGHLIGHT:
                     //if annotation exists with matching range, get annotation, otherwise create annotation
