@@ -90,6 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 userId: userInfo.sub, // Unique Google ID
                 userEmail: userInfo.email, // Optional: user's email
                 token: token, // Store the token for future use if needed
+                isPremium: false, // Default value; update later if needed
               },
               () => {
                 console.log("User information saved to chrome.storage.")

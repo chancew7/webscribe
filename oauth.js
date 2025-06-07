@@ -25,6 +25,7 @@ window.onload = function () {
             // Extract relevant user data
             const userId = userInfo.sub; // Unique user ID
             const userEmail = userInfo.email;
+
   
             // Store user info in chrome.storage
             chrome.storage.sync.set(
@@ -32,6 +33,7 @@ window.onload = function () {
                 userId: userId,
                 userEmail: userEmail,
                 token: token, // Store the token if needed later
+                isPremium: false // Default value; update later if needed
               },
               () => {
                 console.log("User information saved to chrome.storage.");
@@ -44,4 +46,3 @@ window.onload = function () {
       });
     });
   };
-  

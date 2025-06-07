@@ -6,8 +6,6 @@ import { markup } from './markup.js';
 
 import { db } from './firebase-init.js';
 import { collection, query, where, getDocs, addDoc, doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from './firebase-init.js';
 /*
 chrome.action.onClicked.addListener(function() {
     chrome.tabs.create({url: '../index.html'});
@@ -16,18 +14,9 @@ chrome.action.onClicked.addListener(function() {
 
 //context menu buttons 
 async function isUserPremium(userId) {
-   if (!userId) return false;
-   try {
-        const userRef = doc(db, "users", userId);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-            const userData = userSnap.data();
-            return userData.premium === true;
-        }
-   } catch (error) {
-       console.error("Error checking premium status:", error);
-   }
-   return false;
+    chrome.storage.sync.get("isPremium", (result) => {
+        return result.isPremium === true;
+    });
 }
 chrome.runtime.onInstalled.addListener(() => {
 

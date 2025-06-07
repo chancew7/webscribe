@@ -42,3 +42,4 @@ npm-debug.log*
 
 # Config files with sensitive data
 src/config.js
+src/background_scripts/firebase-init.js
