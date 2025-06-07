@@ -5,34 +5,17 @@ import { Annotation } from './annotations/Annotation.js';
 import { HighlightAnnotation } from "./annotations/HighlightAnnotation.js";
 import { CommentAnnotation } from "./annotations/CommentAnnotation.js";
 import { TextstyleAnnotation } from "./annotations/TextstyleAnnotation.js";
-import * as annotation_messages from '../background_scripts/annotation_message.js';
 import { Summarize } from '../models/Summarize.js';
 import { API_KEYS } from '../config.js';
 
 import { db } from '../background_scripts/firebase-init.js';
-import { collection, getDocs, query, where, getDoc, addDoc, doc, setDoc } from 'firebase/firestore';
+import { getDoc, doc, setDoc } from 'firebase/firestore';
 
 
 var OPENAI_API_KEY = API_KEYS.OPENAI;
 
 var markupKey = null;
 var url = null;
-
-
-
-export function generateCollaborationMarkupKey() {
-    const words = constants.words;
-    const word = words[Math.floor(Math.random() * words.length)];
-    const number = Math.floor(1000 + Math.random() * 9000); // 4-digit number
-    return `${word}${number}`;
-}
-
-export function generateViewMarkupKey() {
-    const words = constants.words;
-    const word = words[Math.floor(Math.random() * words.length)];
-    const number = Math.floor(1000 + Math.random() * 9000); // 4-digit number
-    return `V_${word}${number}`;
-}
 
 
 async function createMarkup(url) {
@@ -73,6 +56,19 @@ async function createMarkup(url) {
     return markupKey;
 }
 
+export function generateCollaborationMarkupKey() {
+    const words = constants.words;
+    const word = words[Math.floor(Math.random() * words.length)];
+    const number = Math.floor(1000 + Math.random() * 9000); // 4-digit number
+    return `${word}${number}`;
+}
+
+export function generateViewMarkupKey() {
+    const words = constants.words;
+    const word = words[Math.floor(Math.random() * words.length)];
+    const number = Math.floor(1000 + Math.random() * 9000); // 4-digit number
+    return `V_${word}${number}`;
+}
 
 export function reimplementAnnotation(annotation) {
 
