@@ -163,6 +163,9 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
         annotation_messages.saveAnnotationToDatabase(message.annotation);
     }
+    else if (message.key === constants.MessageKeys.UPDATE_COMMENT_TEXT){
+        
+    }
 
     else if (message.key === constants.MessageKeys.GET_MARKUP_KEY){
         const {url, userId} = message;

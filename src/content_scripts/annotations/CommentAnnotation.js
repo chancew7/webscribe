@@ -9,6 +9,7 @@ export class CommentAnnotation extends Annotation{
         this.message = message;
         this.commentBox = document.createElement('textarea');
         this.selectionIndex = selectionIndex;
+        this.id = "";
     }
 
     performAnnotation(preExisting){
@@ -40,15 +41,24 @@ export class CommentAnnotation extends Annotation{
     }
 
     addToMarkup(){
+        this.id = super.generateAnnotationId();
         const annotationData = this.toJson();
         chrome.runtime.sendMessage({
             key: constants.MessageKeys.SAVE_ANNOTATION,
             annotation: annotationData
         });
     }
+    updateCommentText(){
+        chrome.runtime.sendMessage({
+            key: constants.MessageKeys.UPDATE_COMMENT_TEXT,
+            new_comment: this.message,
+            id: this.id, 
+            markup_key: this.markup_key
+        })
+    }
     toJson(){
         return {
-            id: super.generateAnnotationId(),
+            id: this.id,
             type: this.annotationType,
             text: this.range.toString(),
             markup_key: this.markup_key,
@@ -124,7 +134,8 @@ export class CommentAnnotation extends Annotation{
             this.commentBox.addEventListener('blur', () => {
                 this.span.style.backgroundColor = 'transparent';
                 this.commentBox.removeEventListener('keydown', onKeyDown);
-                this.addToMarkup();
+                //this.addToMarkup(); //this is where the text gets updated, create new function, updateCommentText instead of addToMarkup
+                this.updateCommentText();
             });
         });
     }
