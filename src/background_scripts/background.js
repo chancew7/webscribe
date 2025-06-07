@@ -6,15 +6,32 @@ import { markup } from './markup.js';
 
 import { db } from './firebase-init.js';
 import { collection, query, where, getDocs, addDoc, doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { reimplementAnnotation } from "../content_scripts/annotation_builder.js";
-
+/*
 chrome.action.onClicked.addListener(function() {
     chrome.tabs.create({url: '../index.html'});
   });
+*/
 
 //context menu buttons 
+async function isUserPremium(userId) {
+    chrome.storage.sync.get("isPremium", (result) => {
+        return result.isPremium === true;
+    });
+}
 chrome.runtime.onInstalled.addListener(() => {
 
+    chrome.storage.sync.get(["userId"], async (result) => {
+    const userId = result.userId;
+    const premium = await isUserPremium(userId);
+
+    if (premium) {
+        chrome.contextMenus.create({
+            id: constants.ActionType.GENERATE,
+            title: "Generate Infographic", // or constants.Titles.GENERATE if you add it back
+            contexts: ["selection", "page"]
+        });
+    }
+    });
 
     chrome.contextMenus.create({
         id: constants.ActionType.HIGHLIGHT,
@@ -44,12 +61,6 @@ chrome.runtime.onInstalled.addListener(() => {
         title: "Yellow" + " ".repeat(8) + constants.CommandShortcuts.HIGHLIGHT,
         parentId: constants.ActionType.HIGHLIGHT,
         contexts: ["selection"]
-    });
-
-    chrome.contextMenus.create({
-        id: constants.ActionType.GENERATE,
-        title: constants.Titles.GENERATE,
-        contexts: ["selection", "page"]
     });
 
     chrome.contextMenus.create({

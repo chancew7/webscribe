@@ -13,7 +13,7 @@ export const MessageKeys = {
     ANNOTATION: 'annotate',
     MARKUP_MESSAGE: 'markup_message',
     SAVE_ANNOTATION: 'save_annotation', 
-    GENERATE: 'generate_infographic',
+   // GENERATE: 'generate_infographic',
     GET_MARKUP_KEY: 'get_markup_key',
     MARKUP_KEY_RESPONSE: 'markup_response',
     UPDATE_COMMENT_TEXT: 'update_comment_text'

@@ -36,8 +36,8 @@
       "Helvetica Neue", sans-serif;
     background-color: var(--background-color);
     color: var(--text-primary);
-    height: 100%;
-    width: 100%;
+    width: 800px;
+    height: 700px;
     line-height: 1.5;
     font-size: 16px;
   }
