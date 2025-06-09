@@ -112,7 +112,7 @@ function redoAnnotations(searchText, targetIndex, annotation){
                         new TextstyleAnnotation(span, range, annotation.textstyleType, annotation.markup_key, annotation.selectionIndex).performAnnotation(true);
                         break;
                     case constants.ActionType.COMMENT:
-                        new CommentAnnotation(span, range, annotation.message, annotation.markup_key, annotation.selectionIndex, annotation.id).performAnnotation(true); //add argument
+                        new CommentAnnotation(span, range, annotation.message, annotation.markup_key, annotation.selectionIndex, annotation.xCoord, annotation.yCoord, annotation.id).performAnnotation(true); //add argument
                         break;
                 }   
                 return;

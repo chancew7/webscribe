@@ -105,35 +105,39 @@ export class CommentAnnotation extends Annotation{
     }
     setDefaultLocation(preExisting){
             
-            if (!preExisting){
-                const rect = this.range.getBoundingClientRect();
-                const topPosition = rect.top + window.scrollY - parseInt(this.commentBox.style.height);
-
-                this.xCoord = `20px`;
-                this.yCoord = `${topPosition}px`;
-                this.commentBox.style.top = this.yCoord;
-                this.commentBox.style.right = this.xCoord;
-            }
-            else{
-                this.commentBox.style.top = this.yCoord;
-                this.commentBox.style.right = this.xCoord;
-            }
+        const boxWidth = parseInt(this.commentBox.style.width); // 300
+        const margin = 20; // same as before
+    
+        if (!preExisting) {
+            const rect = this.range.getBoundingClientRect();
+            const topPosition = rect.top + window.scrollY - parseInt(this.commentBox.style.height);
+    
+            const leftPosition = window.innerWidth - boxWidth - margin;
+    
+            this.xCoord = `${leftPosition}px`;
+            this.yCoord = `${topPosition}px`;
+    
+            this.commentBox.style.top = this.yCoord;
+            this.commentBox.style.left = this.xCoord;
+        } else {
+            this.commentBox.style.top = this.yCoord;
+            this.commentBox.style.left = this.xCoord;
+        }
             
-
-        
     }
+
     enableDragging(element){
         let isDragging = false;
         let offsetX, offsetY;
 
         element.addEventListener('mousedown', (event) => {
             isDragging = true;
-            offsetX = event.clientX - element.getBoundingClientRect().right;
+            offsetX = event.clientX - element.getBoundingClientRect().left;
             offsetY = event.clientY - parseFloat(element.style.top);
 
             const onMouseMove = (moveEvent) => {
                 if (isDragging){
-                    element.style.right = moveEvent.clientX - offsetX + 'px';
+                    element.style.left = moveEvent.clientX - offsetX + 'px';
                     element.style.top = moveEvent.clientY - offsetY + 'px';
                 }
             };
@@ -141,7 +145,7 @@ export class CommentAnnotation extends Annotation{
                 isDragging = false;
                 document.removeEventListener('mousemove', onMouseMove);
                 document.removeEventListener('mouseup', onMouseUp);
-                this.xCoord = `${element.style.right}`;
+                this.xCoord = `${element.style.left}`;
                 console.log("xcoord updated to :", this.xCoord);
                 this.yCoord = `${element.style.top}`;
                 console.log("trying to update location in database");
