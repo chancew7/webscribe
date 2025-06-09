@@ -33,9 +33,18 @@ chrome.runtime.onInstalled.addListener(() => {
     }
     });
 
+    /*
+    chrome.contextMenus.create({
+        id: "parent_menu",
+        title: "Markup", // Replace with your extension's name
+        contexts: ["all"], // Makes this menu appear in all contexts
+    });
+    */
+
     chrome.contextMenus.create({
         id: constants.ActionType.HIGHLIGHT,
         title: constants.Titles.HIGHLIGHT,
+        //parentId: "parent_menu",
         contexts: ["selection"]
     });
     chrome.contextMenus.create({
@@ -66,6 +75,7 @@ chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: constants.ActionType.TEXTSTYLE,
         title: "Textstyle",
+        //parentId: "parent_menu",
         contexts: ["selection"]
     });
     chrome.contextMenus.create({
@@ -91,12 +101,14 @@ chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: constants.ActionType.COMMENT,
         title: constants.Titles.COMMENT,
-        contexts: ["selection"]
+        //parentId: "parent_menu",
+        contexts: ["all"]
     });
 
     chrome.contextMenus.create({
         id: constants.ActionType.SUMMARIZE,
         title: constants.Titles.SUMMARIZE,
+        //parentId: "parent_menu",
         contexts: ["selection"]
     });
 
