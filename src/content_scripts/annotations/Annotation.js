@@ -11,9 +11,12 @@ export class Annotation {
             this.range.surroundContents(this.span);
         } catch (e) {
             // Handle partially selected nodes by extracting contents
-            const fragment = this.range.extractContents();
-            this.span.appendChild(fragment);
-            this.range.insertNode(this.span);
+            if (this.range != null){
+                const fragment = this.range.extractContents();
+                this.span.appendChild(fragment);
+                this.range.insertNode(this.span);
+            }
+            
         }
 
     }

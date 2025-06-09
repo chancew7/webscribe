@@ -4,12 +4,18 @@ import {Annotation} from './Annotation.js';
 
 
 export class CommentAnnotation extends Annotation{
-    constructor(span, range, message = "default message", markup_key, selectionIndex){
+    constructor(span, range, message = "default message", markup_key, selectionIndex, x = "", y = ""){
         super(span, range, markup_key, constants.ActionType.COMMENT);
         this.message = message;
         this.commentBox = document.createElement('textarea');
         this.selectionIndex = selectionIndex;
         this.id = "";
+        this.xCoord = x;
+        this.yCoord = y;
+        this.textAffiliation = false;
+        if (this.span != null && this.range != null){
+            this.textAffiliation = true;
+        }
     }
 
     performAnnotation(preExisting){
@@ -22,7 +28,7 @@ export class CommentAnnotation extends Annotation{
         this.setDefaultProperties();
         this.setDefaultLocation();
         this.enableDragging(this.commentBox);
-        this.span.style.backgroundColor = constants.HighlightColors.COMMENT_COLOR; 
+        if (this.textAffiliation) this.span.style.backgroundColor = constants.HighlightColors.COMMENT_COLOR;
         this.addFocusListeners();
         document.body.appendChild(this.commentBox);
 
@@ -48,6 +54,7 @@ export class CommentAnnotation extends Annotation{
             annotation: annotationData
         });
     }
+
     updateCommentText(){
         chrome.runtime.sendMessage({
             key: constants.MessageKeys.UPDATE_COMMENT_TEXT,
@@ -56,6 +63,18 @@ export class CommentAnnotation extends Annotation{
             markup_key: this.markup_key
         })
     }
+
+    updateCommentLocation(){
+        console.log("sending message with xcoord: ", this.xCoord);
+        chrome.runtime.sendMessage({
+            key: constants.MessageKeys.UPDATE_COMMENT_LOCATION,
+            newXCoord: this.xCoord,
+            newYCoord: this.yCoord,
+            id: this.id, 
+            markup_key: this.markup_key
+        });
+    }
+
     toJson(){
         return {
             id: this.id,
@@ -63,7 +82,9 @@ export class CommentAnnotation extends Annotation{
             text: this.range.toString(),
             markup_key: this.markup_key,
             message: this.message,
-            selectionIndex: this.selectionIndex
+            selectionIndex: this.selectionIndex,
+            xCoord: this.xCoord, 
+            yCoord: this.yCoord
         }
     }
 
@@ -86,13 +107,17 @@ export class CommentAnnotation extends Annotation{
         if (this.range && this.range.getBoundingClientRect){
             const rect = this.range.getBoundingClientRect();
             const topPosition = rect.top + window.scrollY - parseInt(this.commentBox.style.height);
-            this.commentBox.style.top = `${topPosition}px`;
-            this.commentBox.style.right = `20px`;
+
+            this.xCoord = `20px`;
+            this.yCoord = `${topPosition}px`;
+            this.commentBox.style.top = this.yCoord;
+            this.commentBox.style.right = this.xCoord;
+
         }
-    }
-    changeLocation(rightDistance, downDistance){
-        this.commentBox.style.right = rightDistance;
-        this.commentBox.style.top = downDistance;
+        else{
+            this.commentBox.style.top = this.yCoord;
+            this.commentBox.style.right = this.xCoord;
+        }
     }
     enableDragging(element){
         let isDragging = false;
@@ -113,15 +138,21 @@ export class CommentAnnotation extends Annotation{
                 isDragging = false;
                 document.removeEventListener('mousemove', onMouseMove);
                 document.removeEventListener('mouseup', onMouseUp);
+                this.xCoord = `${element.style.left}`;
+                console.log("xcoord updated to :", this.xCoord);
+                this.yCoord = `${element.style.top}`;
+                console.log("trying to update location in database");
+                this.updateCommentLocation();
             };
 
             document.addEventListener('mousemove', onMouseMove);
             document.addEventListener('mouseup', onMouseUp);
         });
+
     }
     addFocusListeners() {
         this.commentBox.addEventListener('focus', () => {
-            this.span.style.backgroundColor = constants.HighlightColors.COMMENT_COLOR; 
+            if (this.textAffiliation) this.span.style.backgroundColor = constants.HighlightColors.COMMENT_COLOR; 
         
             const onKeyDown = (event) => {
                 if (event.key === 'Delete') {
@@ -132,7 +163,7 @@ export class CommentAnnotation extends Annotation{
             this.commentBox.addEventListener('keydown', onKeyDown);
 
             this.commentBox.addEventListener('blur', () => {
-                this.span.style.backgroundColor = 'transparent';
+                if (this.textAffiliation) this.span.style.backgroundColor = 'transparent';
                 this.commentBox.removeEventListener('keydown', onKeyDown);
                 //this.addToMarkup(); //this is where the text gets updated, create new function, updateCommentText instead of addToMarkup
                 this.updateCommentText();

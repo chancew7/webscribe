@@ -7,7 +7,6 @@ export class TextstyleAnnotation extends Annotation{
     constructor(span, range, type, markup_key, selectionIndex){
         super(span, range, markup_key, constants.ActionType.TEXTSTYLE);
         this.type = type; //bold, italic, underline
-        console.log("textstyle annotation created. type = ", type);
         this.textstyles = {
             bolded: false,
             italicized: false,

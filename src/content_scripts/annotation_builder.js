@@ -79,8 +79,12 @@ export function reimplementAnnotation(annotation) {
   
 
 function redoAnnotations(searchText, targetIndex, annotation){
-    if(!searchText) return;
-
+    if(!searchText) {
+        if (annotation.type == "comment"){
+            new CommentAnnotation(null, null, annotation.message, annotation.markup_key, annotation.selectionIndex, annotation.xCoord, annotation.yCoord).performAnnotation(true);
+        }
+        return;
+    }
     const body = document.body;
     const textNodes = getTextNodes(body);
     let globalMatchIndex = 0;

@@ -113,6 +113,24 @@ export async function updateDBComment(newMessage, id, markup_key){
     await updateDoc(markupDocRef, {annotations});
 }
 
+export async function updateDBCommentLocation(x, y, id, markup_key){
+    console.log("updating new x location to :", x);
+
+    const markupDocRef = doc(db, 'markups', markup_key);
+    const docSnap = await getDoc(markupDocRef);
+    if (!docSnap.exists()) return;
+
+    const data = docSnap.data();
+    const annotations = data.annotations || [];
+    const index = annotations.findIndex(a => a.id === id);
+    if (index === -1) return;
+
+    annotations[index].xCoord = x;
+    annotations[index].yCoord = y;
+
+    await updateDoc(markupDocRef, {annotations});
+}
+
 
 export async function saveAnnotationToDatabase(annotation) {
     const markupDocRef = doc(db, 'markups', annotation.markup_key);
