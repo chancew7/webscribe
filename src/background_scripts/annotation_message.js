@@ -120,10 +120,12 @@ export async function updateDBCommentLocation(x, y, id, markup_key){
     const docSnap = await getDoc(markupDocRef);
     if (!docSnap.exists()) return;
 
+    console.log("doc snap exists");
     const data = docSnap.data();
     const annotations = data.annotations || [];
     const index = annotations.findIndex(a => a.id === id);
     if (index === -1) return;
+    console.log("index found");
 
     annotations[index].xCoord = x;
     annotations[index].yCoord = y;

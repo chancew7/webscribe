@@ -4,12 +4,12 @@ import {Annotation} from './Annotation.js';
 
 
 export class CommentAnnotation extends Annotation{
-    constructor(span, range, message = "default message", markup_key, selectionIndex, x = "", y = ""){
+    constructor(span, range, message = "default message", markup_key, selectionIndex, x = "", y = "", id = ""){
         super(span, range, markup_key, constants.ActionType.COMMENT);
         this.message = message;
         this.commentBox = document.createElement('textarea');
         this.selectionIndex = selectionIndex;
-        this.id = "";
+        this.id = id;
         this.xCoord = x;
         this.yCoord = y;
         this.textAffiliation = false;
@@ -26,7 +26,7 @@ export class CommentAnnotation extends Annotation{
             this.commentBox.value = this.message;
         }
         this.setDefaultProperties();
-        this.setDefaultLocation();
+        this.setDefaultLocation(preExisting);
         this.enableDragging(this.commentBox);
         if (this.textAffiliation) this.span.style.backgroundColor = constants.HighlightColors.COMMENT_COLOR;
         this.addFocusListeners();
@@ -103,21 +103,24 @@ export class CommentAnnotation extends Annotation{
         this.commentBox.style.padding = '10px';
         this.commentBox.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
     }
-    setDefaultLocation(){
-        if (this.range && this.range.getBoundingClientRect){
-            const rect = this.range.getBoundingClientRect();
-            const topPosition = rect.top + window.scrollY - parseInt(this.commentBox.style.height);
+    setDefaultLocation(preExisting){
+            
+            if (!preExisting){
+                const rect = this.range.getBoundingClientRect();
+                const topPosition = rect.top + window.scrollY - parseInt(this.commentBox.style.height);
 
-            this.xCoord = `20px`;
-            this.yCoord = `${topPosition}px`;
-            this.commentBox.style.top = this.yCoord;
-            this.commentBox.style.right = this.xCoord;
+                this.xCoord = `20px`;
+                this.yCoord = `${topPosition}px`;
+                this.commentBox.style.top = this.yCoord;
+                this.commentBox.style.right = this.xCoord;
+            }
+            else{
+                this.commentBox.style.top = this.yCoord;
+                this.commentBox.style.right = this.xCoord;
+            }
+            
 
-        }
-        else{
-            this.commentBox.style.top = this.yCoord;
-            this.commentBox.style.right = this.xCoord;
-        }
+        
     }
     enableDragging(element){
         let isDragging = false;
@@ -125,12 +128,12 @@ export class CommentAnnotation extends Annotation{
 
         element.addEventListener('mousedown', (event) => {
             isDragging = true;
-            offsetX = event.clientX - element.getBoundingClientRect().left;
+            offsetX = event.clientX - element.getBoundingClientRect().right;
             offsetY = event.clientY - parseFloat(element.style.top);
 
             const onMouseMove = (moveEvent) => {
                 if (isDragging){
-                    element.style.left = moveEvent.clientX - offsetX + 'px';
+                    element.style.right = moveEvent.clientX - offsetX + 'px';
                     element.style.top = moveEvent.clientY - offsetY + 'px';
                 }
             };
@@ -138,7 +141,7 @@ export class CommentAnnotation extends Annotation{
                 isDragging = false;
                 document.removeEventListener('mousemove', onMouseMove);
                 document.removeEventListener('mouseup', onMouseUp);
-                this.xCoord = `${element.style.left}`;
+                this.xCoord = `${element.style.right}`;
                 console.log("xcoord updated to :", this.xCoord);
                 this.yCoord = `${element.style.top}`;
                 console.log("trying to update location in database");

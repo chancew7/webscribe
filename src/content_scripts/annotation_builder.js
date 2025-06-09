@@ -81,7 +81,7 @@ export function reimplementAnnotation(annotation) {
 function redoAnnotations(searchText, targetIndex, annotation){
     if(!searchText) {
         if (annotation.type == "comment"){
-            new CommentAnnotation(null, null, annotation.message, annotation.markup_key, annotation.selectionIndex, annotation.xCoord, annotation.yCoord).performAnnotation(true);
+            new CommentAnnotation(null, null, annotation.message, annotation.markup_key, annotation.selectionIndex, annotation.xCoord, annotation.yCoord, annotation.id).performAnnotation(true);
         }
         return;
     }
@@ -112,7 +112,7 @@ function redoAnnotations(searchText, targetIndex, annotation){
                         new TextstyleAnnotation(span, range, annotation.textstyleType, annotation.markup_key, annotation.selectionIndex).performAnnotation(true);
                         break;
                     case constants.ActionType.COMMENT:
-                        new CommentAnnotation(span, range, annotation.message, annotation.markup_key, annotation.selectionIndex).performAnnotation(true); //add argument
+                        new CommentAnnotation(span, range, annotation.message, annotation.markup_key, annotation.selectionIndex, annotation.id).performAnnotation(true); //add argument
                         break;
                 }   
                 return;
