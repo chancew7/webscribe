@@ -62,7 +62,20 @@ export function sendGenerateMessage(tab) {
     });
 }
 
+export function sendClearAllMessage(tab){
+    console.log("sending clear all message");
 
+    chrome.tabs.sendMessabe(tab.id, {
+        action: "clear_all_action",
+        key: "clear_all_key"
+    },
+    (response) => {
+        if (chrome.runtime.lastError && !chrome.runtime.lastError.message.includes("Could not establish connection. Receiving end does not exist")
+            && !chrome.runtime.lastError.message.includes("The message port closed before a response was received")) {
+            console.error("error sending message" + chrome.runtime.lastError.message);
+        }
+    });
+}
 
 
 export function sendClearMessage(tab){

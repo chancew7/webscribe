@@ -262,6 +262,20 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
             let selectedText = window.getSelection().toString().trim();
             await generateImage(selectedText);
     }
+
+    else if (message.key === "clear_all_key"){
+        //using markup key, clear the annotations field 
+         if (markupKey) {
+        try {
+            const docRef = doc(db, 'markups', markupKey);
+            await setDoc(docRef, { annotations: [] }, { merge: true });
+            window.location.reload();
+        } catch (error) {
+            console.error("Error clearing annotations:", error);
+        }
+    }
+        //reload the page 
+    }
             
 
 });

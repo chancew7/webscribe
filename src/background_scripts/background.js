@@ -33,18 +33,27 @@ chrome.runtime.onInstalled.addListener(() => {
     }
     });
 
-    /*
     chrome.contextMenus.create({
-        id: "parent_menu",
-        title: "Markup", // Replace with your extension's name
-        contexts: ["all"], // Makes this menu appear in all contexts
+        id: constants.ActionType.COMMENT,
+        title: constants.Titles.COMMENT,
+        contexts: ["all"]
     });
-    */
+
+    chrome.contextMenus.create({
+        id: "remove_button",
+        title: "Clear Annotation",
+        contexts: ["all"]
+    });
+
+    chrome.contextMenus.create({
+        id: "clear_all_button", 
+        title: "Clear all annotations",
+        contexts: ["all"]
+    });
 
     chrome.contextMenus.create({
         id: constants.ActionType.HIGHLIGHT,
         title: constants.Titles.HIGHLIGHT,
-        //parentId: "parent_menu",
         contexts: ["selection"]
     });
     chrome.contextMenus.create({
@@ -75,7 +84,6 @@ chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: constants.ActionType.TEXTSTYLE,
         title: "Textstyle",
-        //parentId: "parent_menu",
         contexts: ["selection"]
     });
     chrome.contextMenus.create({
@@ -99,25 +107,11 @@ chrome.runtime.onInstalled.addListener(() => {
 
 
     chrome.contextMenus.create({
-        id: constants.ActionType.COMMENT,
-        title: constants.Titles.COMMENT,
-        //parentId: "parent_menu",
-        contexts: ["all"]
-    });
-
-    chrome.contextMenus.create({
         id: constants.ActionType.SUMMARIZE,
         title: constants.Titles.SUMMARIZE,
-        //parentId: "parent_menu",
         contexts: ["selection"]
     });
 
-
-    chrome.contextMenus.create({
-        id: "remove_button",
-        title: "Clear Annotation",
-        contexts: ["selection"]
-    });
     chrome.contextMenus.create({
         id: "remove_highlight",
         title: "Clear Highlight",
@@ -150,6 +144,10 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     else if (info.menuItemId === constants.ActionType.GENERATE) {
         console.log("calling generate function");
         annotation_messages.sendGenerateMessage(tab);
+    }
+    else if (info.menuItemId === "clear_all_button"){
+        console.log("clear all clicked");
+        annotation_messages.sendClearAllMessage(tab);
     }
     
 });
