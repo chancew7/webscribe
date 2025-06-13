@@ -64,7 +64,7 @@ export const Titles = {
     ITALIC: PreTitles.ITALIC + " ".repeat(31) +CommandShortcuts.ITALIC,
     UNDERLINE: PreTitles.UNDERLINE + " ".repeat(25) +CommandShortcuts.UNDERLINE,
     COMMENT: PreTitles.COMMENT + " ".repeat(15),
-    SUMMARIZE: PreTitles.SUMMARIZE, 
+    SUMMARIZE: PreTitles.SUMMARIZE+" 💎", 
     GENERATE: "Generate Infographic"
 }
 
