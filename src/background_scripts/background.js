@@ -24,13 +24,13 @@ chrome.runtime.onInstalled.addListener(() => {
     const userId = result.userId;
     const premium = await isUserPremium(userId);
 
-    if (premium) {
-        chrome.contextMenus.create({
-            id: constants.ActionType.GENERATE,
-            title: "Generate Infographic", // or constants.Titles.GENERATE if you add it back
-            contexts: ["selection", "page"]
-        });
-    }
+   
+    chrome.contextMenus.create({
+        id: constants.ActionType.GENERATE,
+        title: "Generate Infographic 💎", 
+        contexts: ["selection", "page"]
+    });
+
     });
 
     chrome.contextMenus.create({
