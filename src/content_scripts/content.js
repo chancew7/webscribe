@@ -62,17 +62,7 @@ document.addEventListener('keydown', function (event) {
             }
         });
     }
-    else if (event.key === 'Delete' || event.key === 'Backspace') {
-        chrome.runtime.sendMessage({
-            action: constants.ActionType.CLEAR,
-            key: constants.MessageKeys.KEY_COMMAND
-        }, (response) => {
-            if (chrome.runtime.lastError && !chrome.runtime.lastError.message.includes("Could not establish connection. Receiving end does not exist")
-                && !chrome.runtime.lastError.message.includes("The message port closed before a response was received")) {
-                console.error("error sending message" + chrome.runtime.lastError.message);
-            }
-        });
-    }
+    
     else if (event.ctrlKey && event.shiftKey && event.code === 'KeyH') {
         chrome.runtime.sendMessage({
             action: constants.ActionType.HIGHLIGHT,

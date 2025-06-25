@@ -13,6 +13,7 @@ export class CommentAnnotation extends Annotation{
         this.xCoord = x;
         this.yCoord = y;
         this.textAffiliation = false;
+        this.focused = true;
         if (this.span != null && this.range != null){
             this.textAffiliation = true;
         }
@@ -32,12 +33,6 @@ export class CommentAnnotation extends Annotation{
         if (this.textAffiliation) this.span.style.backgroundColor = constants.HighlightColors.COMMENT_COLOR;
         this.addFocusListeners();
         document.body.appendChild(this.commentBox);
-
-        this.commentBox.addEventListener('keydown', (e) => {
-            if (e.key === 'Backspace') {
-                e.stopPropagation();
-            }
-        });
 
         this.commentBox.addEventListener('input', (event) => {
             this.message = event.target.value;
@@ -165,6 +160,7 @@ export class CommentAnnotation extends Annotation{
     }
     addFocusListeners() {
         this.commentBox.addEventListener('focus', () => {
+            this.focused = true;
             if (this.textAffiliation) this.span.style.backgroundColor = constants.HighlightColors.COMMENT_COLOR; 
         
             const onKeyDown = (event) => {
@@ -176,11 +172,12 @@ export class CommentAnnotation extends Annotation{
             this.commentBox.addEventListener('keydown', onKeyDown);
 
             this.commentBox.addEventListener('blur', () => {
+                this.focused = false
                 if (this.textAffiliation) this.span.style.backgroundColor = 'transparent';
                 this.commentBox.removeEventListener('keydown', onKeyDown);
-                //this.addToMarkup(); //this is where the text gets updated, create new function, updateCommentText instead of addToMarkup
                 this.updateCommentText();
             });
         });
     }
+
 }
