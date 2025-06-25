@@ -130,53 +130,62 @@ function getTextNodes(element) {
     return textNodes;
 }
 
+function buildIndexMap(root) {
+    const textNodes = [];
+    const indexMap = [];
+    let fullText = '';
+
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+    while (walker.nextNode()) {
+        const node = walker.currentNode;
+        const nodeText = node.nodeValue;
+        for (let i = 0; i < nodeText.length; i++) {
+            indexMap.push({ node, offset: i });
+        }
+        fullText += nodeText;
+        textNodes.push(node);
+    }
+
+    return { fullText, indexMap };
+}
+
 function getSelectionIndex(searchText, selection) {
     if (!searchText || !selection || !selection.rangeCount) return null;
 
-    const body = document.body;
-    const textNodes = getTextNodes(body);
-    let textMatches = 0; // Global match index
+    const selectedRange = selection.getRangeAt(0);
+    const { fullText, indexMap } = buildIndexMap(document.body);
 
-    const selectedRange = selection.getRangeAt(0); // Use the passed selection
+    // Match all instances
+    const regex = new RegExp(searchText, 'g');
+    let match;
+    let matchIndex = 0;
 
-    // Loop through text nodes and match instances
-    for (const node of textNodes) {
-        const text = node.nodeValue;
-        const searchRegex = new RegExp(searchText, 'g'); // Case-insensitive search
+    while ((match = regex.exec(fullText)) !== null) {
+        const start = match.index;
+        const end = start + match[0].length;
 
-        // Check if the text node contains any matches
-        if (text != null && searchRegex.test(text)) {
-            const matches = text.match(searchRegex); // Find all matches in this node
-            let currentOffset = 0;
+        const startInfo = indexMap[start];
+        const endInfo = indexMap[end - 1];
 
-            for (const match of matches) { // Use a `for` loop instead of `forEach`
-                textMatches++; // Increment global match index
+        const matchRange = document.createRange();
+        matchRange.setStart(startInfo.node, startInfo.offset);
+        matchRange.setEnd(endInfo.node, endInfo.offset + 1);
 
-                // Get range of the current match
-                const startOffset = text.indexOf(match, currentOffset);
-                const endOffset = startOffset + match.length;
-                currentOffset = endOffset;
-
-                // Create a range for the current match
-                const matchRange = document.createRange();
-                matchRange.setStart(node, startOffset);
-                matchRange.setEnd(node, endOffset);
-
-                // Compare the selection range to the match range
-                if (
-                    selectedRange.startContainer === matchRange.startContainer &&
-                    selectedRange.startOffset === matchRange.startOffset &&
-                    selectedRange.endContainer === matchRange.endContainer &&
-                    selectedRange.endOffset === matchRange.endOffset
-                ) {
-                    return textMatches; // Return the global match index
-                }
-            }
+        if (
+            selectedRange.startContainer === matchRange.startContainer &&
+            selectedRange.startOffset === matchRange.startOffset &&
+            selectedRange.endContainer === matchRange.endContainer &&
+            selectedRange.endOffset === matchRange.endOffset
+        ) {
+            return matchIndex + 1;
         }
+
+        matchIndex++;
     }
 
-    return null; // No match found
+    return null;
 }
+
 
 
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
