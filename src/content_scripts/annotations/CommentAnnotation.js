@@ -91,6 +91,14 @@ export class CommentAnnotation extends Annotation{
     removeAnnotation(){
         this.commentBox.parentNode.removeChild(this.commentBox);
         this.commentBox = null;
+
+        chrome.runtime.sendMessage({
+            key: constants.MessageKeys.DELETE_COMMENT,
+            id: this.id, 
+            markup_key: this.markup_key
+        })
+
+        //remove comment box from database
     }
 
     setDefaultProperties(){
@@ -147,7 +155,6 @@ export class CommentAnnotation extends Annotation{
                 document.removeEventListener('mouseup', onMouseUp);
                 this.xCoord = `${element.style.left}`;
                 this.yCoord = `${element.style.top}`;
-                console.log("trying to update location in database");
                 this.updateCommentLocation();
             };
 

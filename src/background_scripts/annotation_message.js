@@ -130,6 +130,18 @@ export async function updateDBComment(newMessage, id, markup_key){
     await updateDoc(markupDocRef, {annotations});
 }
 
+export async function deleteDBComment(id, markup_key) {
+    const markupDocRef = doc(db, 'markups', markup_key);
+    const docSnap = await getDoc(markupDocRef);
+    if (!docSnap.exists()) return;
+
+    const data = docSnap.data();
+    const annotations = data.annotations || [];
+    const filtered = annotations.filter(a => a.id !== id);
+    await updateDoc(markupDocRef, { annotations: filtered });
+}
+
+
 export async function updateDBCommentLocation(x, y, id, markup_key){
     console.log("updating new x location to :", x);
 
