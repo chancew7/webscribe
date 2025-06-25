@@ -54,7 +54,6 @@ export async function isUserPremium() {
 }
 
 export async function sendGenerateMessage(tab) {
-    console.log("sending generate message");
     chrome.tabs.sendMessage(tab.id, {
         action: constants.ActionType.GENERATE,
         key: constants.MessageKeys.GENERATE
@@ -67,7 +66,6 @@ export async function sendGenerateMessage(tab) {
 }
 
 export function sendClearAllMessage(tab){
-    console.log("sending clear all message");
 
     chrome.tabs.sendMessage(tab.id, {
         action: "clear_all_action",
@@ -143,18 +141,15 @@ export async function deleteDBComment(id, markup_key) {
 
 
 export async function updateDBCommentLocation(x, y, id, markup_key){
-    console.log("updating new x location to :", x);
 
     const markupDocRef = doc(db, 'markups', markup_key);
     const docSnap = await getDoc(markupDocRef);
     if (!docSnap.exists()) return;
 
-    console.log("doc snap exists");
     const data = docSnap.data();
     const annotations = data.annotations || [];
     const index = annotations.findIndex(a => a.id === id);
     if (index === -1) return;
-    console.log("index found");
 
     annotations[index].xCoord = x;
     annotations[index].yCoord = y;

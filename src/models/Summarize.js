@@ -14,7 +14,6 @@ export class Summarize extends Annotation {
 
     async generateSummary() {
         if (!(await annotation_messages.isUserPremium())) {
-            console.log("User is not premium, cannot generate summary.");
             this.summary = "This is a premium feature. Please upgrade to a premium account to use this feature.";
             const span = document.createElement('span');
             const comment = new CommentAnnotation(span, this.range, this.summary, this.markup_key);
@@ -52,13 +51,11 @@ export class Summarize extends Annotation {
                 const text = this.range.toString()
                 const result = await chatSession.sendMessage("Summarize the following text: " + text);
                 this.summary = result.response.text();
-                console.log(this.summary);
                 return result.response.text();
             }
 
             const summary = await run();
             this.summary = summary;
-            console.log("Summary generated:", this.summary);
 
             // Create a comment annotation with the summary
             const span = document.createElement('span');

@@ -66,7 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("Login failed:", chrome.runtime.lastError.message)
         showToast("Login failed: " + chrome.runtime.lastError.message)
       } else {
-        console.log("Logged in successfully. Token:", token)
   
         // Fetch user information from Google's UserInfo endpoint
         fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
@@ -82,7 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
             return response.json()
           })
           .then((userInfo) => {
-            console.log("User Info:", userInfo)
   
             // Store userId and token in chrome.storage
             chrome.storage.sync.set(
@@ -93,7 +91,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 isPremium: false, // Default value; update later if needed
               },
               () => {
-                console.log("User information saved to chrome.storage.")
                 checkLoginStatus() // Update the UI
                 showToast("Logged in successfully!")
               },
@@ -118,7 +115,6 @@ document.addEventListener("DOMContentLoaded", () => {
             chrome.identity.removeCachedAuthToken({ token }, () => {
               // 3. Clear stored user data
               chrome.storage.sync.remove(["userId", "userEmail", "token"], () => {
-                console.log("Logged out fully.")
                 checkLoginStatus() // Update the UI
                 showToast("Logged out successfully!")
               })

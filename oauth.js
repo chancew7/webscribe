@@ -21,7 +21,6 @@ window.onload = function () {
             return response.json();
           })
           .then((userInfo) => {
-            console.log("User Info:", userInfo);
   
             // Extract relevant user data
             const userId = userInfo.sub; // Unique user ID
@@ -37,7 +36,6 @@ window.onload = function () {
                 isPremium: annotation_messages.isUserPremium() // Default value; update later if needed
               },
               () => {
-                console.log("User information saved to chrome.storage.");
               }
             );
           })

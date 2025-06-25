@@ -20,7 +20,6 @@ export class CommentAnnotation extends Annotation{
     }
 
     performAnnotation(preExisting){
-        console.log("performing comment annotation");
         if (!preExisting){
             this.commentBox.placeholder = this.message;
         }

@@ -37,7 +37,6 @@ async function createMarkup(url) {
     });
 
     if (!userId) {
-        console.log("User ID not found in storage. Markup will not have associated user.");
         return null;
     }
 
@@ -176,7 +175,6 @@ function getSelectionIndex(searchText, selection) {
         }
     }
 
-    console.log("Selected text not found in document.");
     return null; // No match found
 }
 
@@ -339,7 +337,6 @@ async function generateCaption(summary) {
 
             // Extract and return the AI-generated caption
             const caption = result.response.text();
-            console.log("Generated Caption:", caption);
             return caption;
         };
     }

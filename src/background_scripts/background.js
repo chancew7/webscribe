@@ -142,11 +142,9 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
         annotation_messages.sendSummarizeMessage(tab);
     }
     else if (info.menuItemId === constants.ActionType.GENERATE) {
-        console.log("calling generate function");
         annotation_messages.sendGenerateMessage(tab);
     }
     else if (info.menuItemId === "clear_all_button"){
-        console.log("clear all clicked");
         annotation_messages.sendClearAllMessage(tab);
     }
     
@@ -191,7 +189,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         annotation_messages.deleteDBComment(message.id, message.markup_key);
     }
     else if (message.key === constants.MessageKeys.UPDATE_COMMENT_LOCATION){
-        console.log("message recieved. x = :", message.newXCoord);
         annotation_messages.updateDBCommentLocation(message.newXCoord, message.newYCoord, message.id, message.markup_key);
     }
 
@@ -270,7 +267,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
 
     else if (message.key === "loadAnnotations") {
-        console.log("load annotations message recieved");
         const { viewAnnotationKey, userId } = message;
 
         try {
@@ -316,7 +312,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
             }
         }
         else{ //view only key
-            console.log("view only key");
             const q = query(
                 collection(db, "markups"),
                 where("view_key", "==", viewAnnotationKey)
@@ -423,7 +418,6 @@ async function loadMarkup(url) {
         });
 
         if (!userId) {
-            console.log("User ID not found in storage. Skipping markup loading.");
             return null; // Skip if no userId is found
         }
 
