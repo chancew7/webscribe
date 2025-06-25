@@ -3,6 +3,12 @@ import * as constants from "../constants.js";
 import { db } from './firebase-init.js';
 import { collection, query, where, getDocs, addDoc, doc, updateDoc, arrayUnion, getDoc } from 'firebase/firestore';
 
+export function sendDeleteMessage(tab){
+    chrome.tabs.sendMessage(tab.id, {
+        action: "delete_message",
+        key: "delete_message"
+    });
+}
 
 export function sendHighlightMessage(color, tab){
     chrome.tabs.sendMessage(tab.id, {

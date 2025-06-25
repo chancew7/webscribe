@@ -102,6 +102,7 @@ function redoAnnotations(searchText, targetIndex, annotation){
                 range.setEnd(node, match.index + match[0].length);
 
                 const span = document.createElement('span');
+                span.setAttribute('webscribe', '');
 
                 switch (annotation.type) {
                     case constants.ActionType.HIGHLIGHT:
@@ -230,6 +231,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         if (selection.rangeCount > 0) {
             const range = selection.getRangeAt(0);
             const span = document.createElement('span');
+            span.setAttribute('webscribe', '');
 
             let selectionIndex = getSelectionIndex(range.toString(), selection);
 
@@ -258,6 +260,20 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
                     break;
             }
         }
+    }
+
+    else if (message.key === "delete_message"){
+        console.log("attempting deletion")
+        const selectedNode = window.getSelection().anchorNode;
+        const span = selectedNode?.parentElement.closest('span[webscribe]');
+        if (span) {
+            console.log("removing span");
+            while (span.firstChild) {
+                span.parentNode.insertBefore(span.firstChild, span);
+            }
+            span.remove();
+        }
+        //remove from database now, possible may need an id inside the span -> should be easy lowkey -> find id in database and clear it 
     }
     
     else if (message.key === constants.MessageKeys.GENERATE) {

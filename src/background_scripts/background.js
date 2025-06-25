@@ -42,7 +42,7 @@ chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: "remove_button",
         title: "Clear Annotation",
-        contexts: ["all"]
+        contexts: ["selection"]
     });
 
     chrome.contextMenus.create({
@@ -112,13 +112,14 @@ chrome.runtime.onInstalled.addListener(() => {
         contexts: ["selection"]
     });
 
+/*
     chrome.contextMenus.create({
         id: "remove_highlight",
         title: "Clear Highlight",
         parentId: "remove_button",
         contexts: ["selection"]
     });
-
+*/
 
 });
 //context menu listeners
@@ -135,8 +136,9 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     else if (info.menuItemId === constants.ActionType.COMMENT) {
         annotation_messages.sendCommentMessage(tab);
     }
-    else if (info.parentMenuItemId === "remove_button") {
-        annotation_messages.sendHighlightMessage(constants.HighlightColors.TRANSPARENT, tab);
+    else if (info.menuItemId === "remove_button") {
+        //annotation_messages.sendHighlightMessage(constants.HighlightColors.TRANSPARENT, tab);
+        annotation_messages.sendDeleteMessage(tab);
     }
     else if (info.menuItemId === constants.ActionType.SUMMARIZE) {
         annotation_messages.sendSummarizeMessage(tab);
