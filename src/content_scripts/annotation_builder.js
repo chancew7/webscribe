@@ -219,7 +219,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
             markupKey = await createMarkup(url);
         }
 
-        const selection = window.getSelection();
+        const selection = window.getSelection(); 
         if (selection.rangeCount > 0) {
             const range = selection.getRangeAt(0);
             const span = document.createElement('span');
@@ -256,12 +256,9 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     else if (message.key === constants.MessageKeys.GENERATE) {
       
         if (!(await annotation_messages.isUserPremium())) {
-                    console.log("User is not premium, cannot generate infographic.");
                     const summary = "This is a premium feature. Please upgrade to a premium account to use this feature.";
-                    const span = document.createElement('span');
-                    const comment = new CommentAnnotation(span, document.createRange(), summary, null);
+                    const comment = new CommentAnnotation(document.createElement('span'), window.getSelection().getRangeAt(0), summary, null);
                     comment.performAnnotation();
-                    return this.summary;
                 }
         if (markupKey == null) {
             markupKey = await createMarkup(url);
