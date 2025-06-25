@@ -85,7 +85,6 @@ function redoAnnotations(searchText, targetIndex, annotation){
         return;
     }
     const body = document.body;
-    const textNodes = getTextNodes(body);
     let globalMatchIndex = 0;
 
     for (const node of textNodes){
@@ -120,21 +119,12 @@ function redoAnnotations(searchText, targetIndex, annotation){
     }
 }
 
-// Helper function: Get all text nodes in an element
-function getTextNodes(element) {
-    const textNodes = [];
-    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
-    while (walker.nextNode()) {
-        textNodes.push(walker.currentNode);
-    }
-    return textNodes;
-}
+
 
 function getSelectionIndex(searchText, selection) {
     if (!searchText || !selection || !selection.rangeCount) return null;
 
     const body = document.body;
-    const textNodes = getTextNodes(body);
     let textMatches = 0; // Global match index
 
     const selectedRange = selection.getRangeAt(0); // Use the passed selection
