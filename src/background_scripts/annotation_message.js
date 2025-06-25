@@ -1,4 +1,3 @@
-
 import * as constants from "../constants.js";
 
 import { db } from './firebase-init.js';
@@ -49,7 +48,12 @@ export function sendCommentMessage(tab){
 }
 
 
-export function sendGenerateMessage(tab) {
+export async function isUserPremium() {
+    const user = JSON.parse(localStorage.getItem('user')) || {};
+    return user.email === 'markag121@gmail.com';
+}
+
+export async function sendGenerateMessage(tab) {
     console.log("sending generate message");
     chrome.tabs.sendMessage(tab.id, {
         action: constants.ActionType.GENERATE,

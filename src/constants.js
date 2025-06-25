@@ -13,7 +13,7 @@ export const MessageKeys = {
     ANNOTATION: 'annotate',
     MARKUP_MESSAGE: 'markup_message',
     SAVE_ANNOTATION: 'save_annotation', 
-   // GENERATE: 'generate_infographic',
+    GENERATE: 'generate_infographic',
     GET_MARKUP_KEY: 'get_markup_key',
     MARKUP_KEY_RESPONSE: 'markup_response',
     UPDATE_COMMENT_TEXT: 'update_comment_text',
@@ -65,7 +65,7 @@ export const Titles = {
     UNDERLINE: PreTitles.UNDERLINE + " ".repeat(25) +CommandShortcuts.UNDERLINE,
     COMMENT: PreTitles.COMMENT + " ".repeat(15),
     SUMMARIZE: PreTitles.SUMMARIZE+" 💎", 
-    GENERATE: "Generate Infographic"
+    GENERATE: "Generate Infographic 💎"
 }
 
 export const words = [

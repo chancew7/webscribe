@@ -2,6 +2,7 @@ import { Annotation } from './Annotation.js';
 import { ActionType } from '../constants.js';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { CommentAnnotation } from '../content_scripts/annotations/CommentAnnotation.js';
+import * as annotation_messages from '../background_scripts/annotation_message.js';
 
 export class Summarize extends Annotation {
     constructor(selection, range, markup_key) {
@@ -12,6 +13,14 @@ export class Summarize extends Annotation {
     }
 
     async generateSummary() {
+        if (!(await annotation_messages.isUserPremium())) {
+            console.log("User is not premium, cannot generate summary.");
+            this.summary = "This is a premium feature. Please upgrade to a premium account to use this feature.";
+            const span = document.createElement('span');
+            const comment = new CommentAnnotation(span, this.range, this.summary, this.markup_key);
+            comment.performAnnotation();
+            return this.summary;
+        }
         try {
             const {
                 GoogleGenerativeAI,
@@ -49,6 +58,7 @@ export class Summarize extends Annotation {
 
             const summary = await run();
             this.summary = summary;
+            console.log("Summary generated:", this.summary);
 
             // Create a comment annotation with the summary
             const span = document.createElement('span');
@@ -61,4 +71,4 @@ export class Summarize extends Annotation {
             throw error;
         }
     }
-} 
+}

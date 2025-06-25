@@ -1,3 +1,4 @@
+import * as annotation_messages from './annotation_message.js';
 window.onload = function () {
     document.querySelector("button").addEventListener("click", function () {
       chrome.identity.getAuthToken({ interactive: true }, function (token) {
@@ -33,7 +34,7 @@ window.onload = function () {
                 userId: userId,
                 userEmail: userEmail,
                 token: token, // Store the token if needed later
-                isPremium: false // Default value; update later if needed
+                isPremium: annotation_messages.isUserPremium() // Default value; update later if needed
               },
               () => {
                 console.log("User information saved to chrome.storage.");

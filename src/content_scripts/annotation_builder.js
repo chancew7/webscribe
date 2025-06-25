@@ -1,6 +1,6 @@
-
-
 import * as constants from "../constants.js";
+import * as annotation_messages from '../background_scripts/annotation_message.js';
+
 import { Annotation } from './annotations/Annotation.js';
 import { HighlightAnnotation } from "./annotations/HighlightAnnotation.js";
 import { CommentAnnotation } from "./annotations/CommentAnnotation.js";
@@ -146,7 +146,7 @@ function getSelectionIndex(searchText, selection) {
         const searchRegex = new RegExp(searchText, 'g'); // Case-insensitive search
 
         // Check if the text node contains any matches
-        if (searchRegex.test(text)) {
+        if (text != null && searchRegex.test(text)) {
             const matches = text.match(searchRegex); // Find all matches in this node
             let currentOffset = 0;
 
@@ -254,7 +254,15 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     }
     
     else if (message.key === constants.MessageKeys.GENERATE) {
-
+      
+        if (!(await annotation_messages.isUserPremium())) {
+                    console.log("User is not premium, cannot generate infographic.");
+                    const summary = "This is a premium feature. Please upgrade to a premium account to use this feature.";
+                    const span = document.createElement('span');
+                    const comment = new CommentAnnotation(span, document.createRange(), summary, null);
+                    comment.performAnnotation();
+                    return this.summary;
+                }
         if (markupKey == null) {
             markupKey = await createMarkup(url);
         }
@@ -319,7 +327,7 @@ async function generateCaption(summary) {
                     contextString += `Annotation: ${annotation.text}\n`;
                 }
             });
-        }
+        
 
         // Step 3: Generate the caption using Google Generative AI
         const run = async () => {
@@ -337,6 +345,7 @@ async function generateCaption(summary) {
             console.log("Generated Caption:", caption);
             return caption;
         };
+    }
 
         const caption = await run();
         return caption;
@@ -344,12 +353,14 @@ async function generateCaption(summary) {
         console.error("Error generating caption:", error);
         throw error;
     }
-}
+    }   
+
 
 
 
 async function generateImage(summary) {
     try {
+        if ((await annotation_messages.isUserPremium())) {
         const caption = await generateCaption(summary);
 
         // Step 1: Fetch image from OpenAI API
@@ -380,7 +391,7 @@ async function generateImage(summary) {
         console.log("caption = ", caption);
 
         // Step 4: Display the image and provide a download option
-        displayImageWithText(imageUrl, caption);
+        displayImageWithText(imageUrl, caption);}
     } catch (error) {
         console.error("Error in generateImage:", error);
     }
@@ -423,7 +434,9 @@ function displayImageWithText(imageUrl, caption) {
         const titleHeight = wrappedTitle.length * lineHeight;
 
         // Caption handling
-        let wrappedCaption = wrapText(ctx, caption, maxWidth);
+        // Ensure caption is a string
+        caption = typeof caption === "string" ? caption : "";
+        const wrappedCaption = wrapText(ctx, caption, maxWidth);
         let captionLineHeight = lineHeight;
 
         // Dynamically adjust font size for the caption if it doesn't fit
@@ -486,6 +499,7 @@ function displayImageWithText(imageUrl, caption) {
 
 // Helper function to wrap text
 function wrapText(ctx, text, maxWidth) {
+    if (typeof text !== "string") text = "";
     const words = text.split(" ");
     const lines = [];
     let currentLine = "";
