@@ -9,7 +9,7 @@ import { Summarize } from '../models/Summarize.js';
 import { API_KEYS } from '../config.js';
 
 import { db } from '../background_scripts/firebase-init.js';
-import { getDoc, doc, setDoc } from 'firebase/firestore';
+import { getDoc, doc, setDoc, updateDoc } from 'firebase/firestore';
 
 
 var OPENAI_API_KEY = API_KEYS.OPENAI;
@@ -102,14 +102,14 @@ function redoAnnotations(searchText, targetIndex, annotation){
                 range.setEnd(node, match.index + match[0].length);
 
                 const span = document.createElement('span');
-                span.setAttribute('webscribe', '');
+                span.setAttribute('webscribe', 'a');
 
                 switch (annotation.type) {
                     case constants.ActionType.HIGHLIGHT:
-                        new HighlightAnnotation(span, range, annotation.color, annotation.markup_key, annotation.selectionIndex).performAnnotation(true);
+                        new HighlightAnnotation(span, range, annotation.color, annotation.markup_key, annotation.selectionIndex, annotation.id).performAnnotation(true);
                         break;
                     case constants.ActionType.TEXTSTYLE:
-                        new TextstyleAnnotation(span, range, annotation.textstyleType, annotation.markup_key, annotation.selectionIndex).performAnnotation(true);
+                        new TextstyleAnnotation(span, range, annotation.textstyleType, annotation.markup_key, annotation.selectionIndex, annotation.id).performAnnotation(true);
                         break;
                     case constants.ActionType.COMMENT:
                         new CommentAnnotation(span, range, annotation.message, annotation.markup_key, annotation.selectionIndex, annotation.xCoord, annotation.yCoord, annotation.id).performAnnotation(true); //add argument
@@ -231,7 +231,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         if (selection.rangeCount > 0) {
             const range = selection.getRangeAt(0);
             const span = document.createElement('span');
-            span.setAttribute('webscribe', '');
+            span.setAttribute('webscribe', 'b');
 
             let selectionIndex = getSelectionIndex(range.toString(), selection);
 
@@ -263,17 +263,37 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     }
 
     else if (message.key === "delete_message"){
-        console.log("attempting deletion")
         const selectedNode = window.getSelection().anchorNode;
         const span = selectedNode?.parentElement.closest('span[webscribe]');
         if (span) {
             console.log("removing span");
+            const annotationId = span.getAttribute('webscribe');
             while (span.firstChild) {
                 span.parentNode.insertBefore(span.firstChild, span);
             }
             span.remove();
+
+            console.log("annotationId = " + annotationId);
+            console.log("markupKey = " + markupKey);
+
+            if (annotationId && markupKey) {
+                console.log("updating database");
+            try {
+                const docRef = doc(db, 'markups', markupKey);
+                const docSnap = await getDoc(docRef);
+                if (!docSnap.exists()) return;
+                console.log("snap exists");
+                const data = docSnap.data();
+                const annotations = data.annotations || [];
+                const filtered = annotations.filter(a => a.id !== annotationId);
+
+                await updateDoc(docRef, { annotations: filtered });
+            } catch (err) {
+                console.error("Error deleting annotation from DB:", err);
+            }
         }
-        //remove from database now, possible may need an id inside the span -> should be easy lowkey -> find id in database and clear it 
+
+        }
     }
     
     else if (message.key === constants.MessageKeys.GENERATE) {

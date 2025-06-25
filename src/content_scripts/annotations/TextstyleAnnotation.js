@@ -4,7 +4,7 @@ import * as constants from "../../constants.js";
 import {Annotation} from './Annotation.js';
 
 export class TextstyleAnnotation extends Annotation{
-    constructor(span, range, type, markup_key, selectionIndex){
+    constructor(span, range, type, markup_key, selectionIndex, id = ""){
         super(span, range, markup_key, constants.ActionType.TEXTSTYLE);
         this.type = type; //bold, italic, underline
         this.textstyles = {
@@ -13,6 +13,13 @@ export class TextstyleAnnotation extends Annotation{
             underlined: false
         };
         this.selectionIndex = selectionIndex;
+        if (!id){
+            this.id = this.generateAnnotationId();
+        }
+        else{
+            this.id = id;
+        }
+        this.span.setAttribute('webscribe', this.id);
     }
 
     performAnnotation(preExisting){
@@ -77,14 +84,23 @@ export class TextstyleAnnotation extends Annotation{
 
     generateAnnotationId(){
         const rand = Math.floor(Math.random() * 1000) + 1;
-        return `${this.markup_key}-${this.annotationType}-${this.range.toString()}-${this.selectionIndex}-${rand}`;
+
+        const rangeStr = this.range.toString();
+        const rangePre = rangeStr.slice(0, Math.min(10, rangeStr.length));
+
+        const id = `${this.markup_key}-${this.type}-${rangePre}-${this.selectionIndex}-${rand}`;
+
+
+        
+        
+        return id;
     }
 
     toJson(){
         let selectedText = this.range.toString();
 
         return{
-            id: this.generateAnnotationId(),
+            id: this.id,
             type: constants.ActionType.TEXTSTYLE,
             textstyleType: this.type,
             text: selectedText,

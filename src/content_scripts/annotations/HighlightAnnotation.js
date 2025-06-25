@@ -5,11 +5,19 @@ export class HighlightAnnotation extends Annotation{
 
     //span, range, annotation.color, annotation.markup_key, annotation.selectionIndex
 
-    constructor(span, range, color = HighlightColors.DEFAULT, markup_key, selectionIndex){
+    constructor(span, range, color = HighlightColors.DEFAULT, markup_key, selectionIndex, id = ""){
         super(span, range, markup_key, constants.ActionType.HIGHLIGHT);
         this.color = color;
         this.highlighted = false;
         this.selectionIndex = selectionIndex;
+        if (!id){
+            this.id = this.generateAnnotationId();
+        }
+        else{
+            this.id = id;
+        }
+        this.span.setAttribute('webscribe', this.id);
+
     }
     performAnnotation(preExisting){
         if (!this.highlighted){
@@ -86,7 +94,13 @@ export class HighlightAnnotation extends Annotation{
 
     generateAnnotationId(){
         const rand = Math.floor(Math.random() * 1000) + 1;
-        return `${this.markup_key}-${this.annotationType}-${this.range.toString()}-${this.selectionIndex}-${rand}`;
+
+        const rangeStr = this.range.toString();
+        const rangePre = rangeStr.slice(0, Math.min(10, rangeStr.length));
+
+        const id = `${this.markup_key}-${this.annotationType}-${rangePre}-${this.selectionIndex}-${rand}`;
+        
+        return id;
     }
 
     toJson() {
@@ -94,7 +108,7 @@ export class HighlightAnnotation extends Annotation{
         let selectedText = this.range.toString();
 
         return {
-            id: this.generateAnnotationId(),
+            id: this.id,
             type: this.annotationType,
             text: selectedText,
             markup_key: this.markup_key,

@@ -32,7 +32,15 @@ export class Annotation {
     }
     generateAnnotationId(){
         const rand = Math.floor(Math.random() * 1000) + 1;
-        return `${this.markup_key}-${this.annotationType}-${this.range.toString()}-${rand}`;
+
+        const rangeStr = this.range.toString()
+        const rangePre = rangeStr.slice(0, Math.min(10, rangeStr.length))
+
+        const id = `${this.markup_key}-${this.annotationType}-${rangePre}-${rand}`;
+        
+        this.span.setAttribute('webscribe', id);
+
+        return id
     }
     
     
