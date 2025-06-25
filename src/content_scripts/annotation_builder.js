@@ -20,8 +20,6 @@ var url = null;
 
 async function createMarkup(url) {
 
-    console.log("no existing markup, creating new");
-
     const markupKey = generateCollaborationMarkupKey();
     const viewOnlyKey = generateViewMarkupKey();
 
@@ -223,13 +221,20 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
     else if (message.key === constants.MessageKeys.ANNOTATION) {
 
+        (async () => {
+
         if (markupKey == null) {
             markupKey = await createMarkup(url);
         }
 
+        
+       
         const selection = window.getSelection(); 
         if (selection.rangeCount > 0) {
+            
             const range = selection.getRangeAt(0);
+            await deleteSelectedAnnotation(); //this invalidates range. Need to somehow store range in deletion-proof way
+
             const span = document.createElement('span');
             span.setAttribute('webscribe', 'b');
 
@@ -260,40 +265,11 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
                     break;
             }
         }
+        })();
     }
 
     else if (message.key === "delete_message"){
-        const selectedNode = window.getSelection().anchorNode;
-        const span = selectedNode?.parentElement.closest('span[webscribe]');
-        if (span) {
-            console.log("removing span");
-            const annotationId = span.getAttribute('webscribe');
-            while (span.firstChild) {
-                span.parentNode.insertBefore(span.firstChild, span);
-            }
-            span.remove();
-
-            console.log("annotationId = " + annotationId);
-            console.log("markupKey = " + markupKey);
-
-            if (annotationId && markupKey) {
-                console.log("updating database");
-            try {
-                const docRef = doc(db, 'markups', markupKey);
-                const docSnap = await getDoc(docRef);
-                if (!docSnap.exists()) return;
-                console.log("snap exists");
-                const data = docSnap.data();
-                const annotations = data.annotations || [];
-                const filtered = annotations.filter(a => a.id !== annotationId);
-
-                await updateDoc(docRef, { annotations: filtered });
-            } catch (err) {
-                console.error("Error deleting annotation from DB:", err);
-            }
-        }
-
-        }
+        deleteSelectedAnnotation();
     }
     
     else if (message.key === constants.MessageKeys.GENERATE) {
@@ -323,8 +299,52 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     }
     }
             
-
 });
+
+
+
+async function deleteSelectedAnnotation() {
+    const selection = window.getSelection();
+    if (selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0);
+    const spans = document.querySelectorAll('span[webscribe]');
+
+    for (const span of spans) {
+        const spanRange = document.createRange();
+        spanRange.selectNodeContents(span);
+
+        const overlap = 
+            range.compareBoundaryPoints(Range.END_TO_START, spanRange) < 0 &&
+            range.compareBoundaryPoints(Range.START_TO_END, spanRange) > 0;
+
+        if (overlap) {
+            const annotationId = span.getAttribute('webscribe');
+
+            while (span.firstChild) {
+                span.parentNode.insertBefore(span.firstChild, span);
+            }
+            span.remove();
+
+            if (annotationId && markupKey) {
+                try {
+                    const docRef = doc(db, 'markups', markupKey);
+                    const docSnap = await getDoc(docRef);
+                    if (!docSnap.exists()) continue;
+
+                    const data = docSnap.data();
+                    const annotations = data.annotations || [];
+                    const filtered = annotations.filter(a => a.id !== annotationId);
+
+                    await updateDoc(docRef, { annotations: filtered });
+                } catch (err) {
+                    console.error("Error deleting annotation from DB:", err);
+                }
+            }
+        }
+    }
+}
+
 
 
 async function generateCaption(summary) {
