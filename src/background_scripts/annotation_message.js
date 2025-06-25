@@ -65,7 +65,7 @@ export function sendGenerateMessage(tab) {
 export function sendClearAllMessage(tab){
     console.log("sending clear all message");
 
-    chrome.tabs.sendMessabe(tab.id, {
+    chrome.tabs.sendMessage(tab.id, {
         action: "clear_all_action",
         key: "clear_all_key"
     },

@@ -65,7 +65,6 @@ export class CommentAnnotation extends Annotation{
     }
 
     updateCommentLocation(){
-        console.log("sending message with xcoord: ", this.xCoord);
         chrome.runtime.sendMessage({
             key: constants.MessageKeys.UPDATE_COMMENT_LOCATION,
             newXCoord: this.xCoord,
@@ -146,7 +145,6 @@ export class CommentAnnotation extends Annotation{
                 document.removeEventListener('mousemove', onMouseMove);
                 document.removeEventListener('mouseup', onMouseUp);
                 this.xCoord = `${element.style.left}`;
-                console.log("xcoord updated to :", this.xCoord);
                 this.yCoord = `${element.style.top}`;
                 console.log("trying to update location in database");
                 this.updateCommentLocation();

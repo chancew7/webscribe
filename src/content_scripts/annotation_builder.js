@@ -170,7 +170,6 @@ function getSelectionIndex(searchText, selection) {
                     selectedRange.endContainer === matchRange.endContainer &&
                     selectedRange.endOffset === matchRange.endOffset
                 ) {
-                    console.log(`Found selected text at global index: ${textMatches}`);
                     return textMatches; // Return the global match index
                 }
             }
@@ -274,7 +273,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
             console.error("Error clearing annotations:", error);
         }
     }
-        //reload the page 
     }
             
 
